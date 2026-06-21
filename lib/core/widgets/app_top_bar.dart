@@ -20,7 +20,9 @@ class AppTopBar extends StatelessWidget {
       child: Row(
         children: [
           GestureDetector(
-            onTap: onMenuTap ?? () => Navigator.of(context).maybePop(),
+            onTap: showBack
+                ? (onMenuTap ?? () => Navigator.of(context).maybePop())
+                : onMenuTap,
             child: Container(
               padding: const EdgeInsets.all(8),
               child: Icon(

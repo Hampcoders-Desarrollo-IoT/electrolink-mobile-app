@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/social_button.dart';
-import 'package:mobile_app_electrolink/features/home/presentation/screens/home_screen.dart';
+import 'package:mobile_app_electrolink/core/enums/user_role.dart';
+import 'package:mobile_app_electrolink/core/widgets/homeowner_shell.dart';
+import 'package:mobile_app_electrolink/features/technical/presentation/screens/technical_dashboard_screen.dart';
+import 'package:mobile_app_electrolink/features/company/presentation/screens/company_shell.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -12,11 +15,29 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool isLogin = true;
+  UserRole _selectedRole = UserRole.client;
 
   void toggleView() {
     setState(() {
       isLogin = !isLogin;
     });
+  }
+
+  void _navigateToDashboard() {
+    final Widget destination;
+    switch (_selectedRole) {
+      case UserRole.technician:
+        destination = const TechnicalDashboardScreen();
+      case UserRole.company:
+        destination = const CompanyShell();
+      case UserRole.client:
+        destination = const HomeownerShell();
+    }
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => destination),
+    );
   }
 
   @override
@@ -64,6 +85,11 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                     const SizedBox(height: 30),
 
+                    if (!isLogin) ...[
+                      _buildRoleSelector(),
+                      const SizedBox(height: 20),
+                    ],
+
                     CustomTextField(
                       label: 'Correo Electrónico',
                       hint: 'ejemplo@electrolink.com',
@@ -98,7 +124,6 @@ class _AuthScreenState extends State<AuthScreen> {
 
                     const SizedBox(height: 20),
 
-                    // Botón Principal con Navegación al Home incorporada
                     SizedBox(
                       width: double.infinity,
                       height: 50,
@@ -108,13 +133,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
-                        onPressed: () {
-                          // Navegamos al HomeScreen al presionar el botón
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const HomeScreen()),
-                          );
-                        },
+                        onPressed: _navigateToDashboard,
                         child: Text(isLogin ? 'Iniciar Sesión' : 'Registrarte'),
                       ),
                     ),
@@ -170,6 +189,59 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRoleSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Tipo de usuario', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+        const SizedBox(height: 8),
+        Row(
+          children: UserRole.values.map((role) {
+            final isSelected = _selectedRole == role;
+            return Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  right: role != UserRole.values.last ? 8 : 0,
+                ),
+                child: GestureDetector(
+                  onTap: () => setState(() => _selectedRole = role),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isSelected ? const Color(0xFF1E2746) : Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isSelected ? const Color(0xFF1E2746) : Colors.grey.shade300,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          role.icon,
+                          color: isSelected ? Colors.white : const Color(0xFF1E2746),
+                          size: 24,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          role.label,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected ? Colors.white : const Color(0xFF1E2746),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app_electrolink/features/auth/presentation/screens/auth_screen.dart';
 
 class TechnicalDrawer extends StatelessWidget {
   final int currentIndex;
@@ -74,8 +75,10 @@ class TechnicalDrawer extends StatelessWidget {
               leading: const Icon(Icons.logout, color: Colors.redAccent),
               title: const Text('Cerrar Sesión', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
               onTap: () {
-                // Aquí puedes añadir tu lógica de logout más adelante
-                Navigator.pop(context);
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const AuthScreen()),
+                  (route) => false,
+                );
               },
             ),
             const SizedBox(height: 20),

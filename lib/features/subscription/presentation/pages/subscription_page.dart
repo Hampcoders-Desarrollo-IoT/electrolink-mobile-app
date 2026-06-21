@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/widgets/app_bottom_nav_bar.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../bloc/subscription_bloc.dart';
 import '../bloc/subscription_event.dart';
@@ -49,14 +48,8 @@ class _SubscriptionView extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const AppBottomNavBar(
-        currentIndex: 1,
-        onTap: _noop,
-      ),
     );
   }
-
-  static void _noop(int _) {}
 
   Widget _buildContent(BuildContext context, SubscriptionLoaded state) {
     final data = state.data;

@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../features/auth/presentation/screens/auth_screen.dart';
 import '../../../subscription/presentation/pages/subscription_page.dart';
+import '../../../auth/presentation/screens/auth_screen.dart';
 
-class DashboardDrawer extends StatefulWidget {
+class CompanyDrawer extends StatefulWidget {
+  final int currentIndex;
   final void Function(int index)? onNavigateToTab;
 
-  const DashboardDrawer({super.key, this.onNavigateToTab});
+  const CompanyDrawer({super.key, this.currentIndex = 0, this.onNavigateToTab});
 
   @override
-  State<DashboardDrawer> createState() => _DashboardDrawerState();
+  State<CompanyDrawer> createState() => _CompanyDrawerState();
 }
 
-class _DashboardDrawerState extends State<DashboardDrawer> {
-  int _activeIndex = 0;
-
+class _CompanyDrawerState extends State<CompanyDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -90,7 +89,6 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Container(
         width: 286,
-        padding: const EdgeInsets.all(0),
         decoration: BoxDecoration(
           color: AppColors.appBarBg,
           borderRadius: BorderRadius.circular(8),
@@ -117,7 +115,7 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
                       ),
                     ],
                   ),
-                  child: const Icon(Icons.person,
+                  child: const Icon(Icons.business,
                       size: 32, color: AppColors.brandLogoBg),
                 ),
               ),
@@ -128,7 +126,7 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Dueño de Hogar',
+                      'TechCorp S.A.C.',
                       style: GoogleFonts.hankenGrotesk(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -152,7 +150,7 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
                 left: 101,
                 top: 68,
                 child: Text(
-                  'ID: EL-4029',
+                  'RUC: 20123456789',
                   style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.idText,
@@ -175,7 +173,7 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
                           size: 12.25, color: AppColors.planBadgeText),
                       const SizedBox(width: 4),
                       Text(
-                        'Plan Estandar',
+                        'Enterprise Premium',
                         style: GoogleFonts.jetBrainsMono(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -196,12 +194,12 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
 
   Widget _buildNavLinks() {
     final items = [
-      ('Home', Icons.home, 0),
-      ('Mis Propiedades', Icons.business_outlined, 1),
-      ('Historial de Servicios', Icons.history, 2),
-      ('Analytics & Consumption', Icons.analytics_outlined, 3),
+      ('Dashboard', Icons.dashboard, 0),
+      ('Sedes', Icons.business_outlined, 1),
+      ('Servicios', Icons.build_outlined, 2),
+      ('Analytics', Icons.analytics_outlined, 3),
       ('Suscripción', Icons.card_membership_outlined, 4),
-      ('Profile', Icons.person_outline, 5),
+      ('Perfil', Icons.person_outline, 5),
     ];
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -210,7 +208,7 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
           return _NavItem(
             icon: item.$2,
             label: item.$1,
-            isActive: _activeIndex == item.$3,
+            isActive: widget.currentIndex == item.$3,
             onTap: () => _navigateTo(context, item.$3),
           );
         }).toList(),
@@ -220,7 +218,6 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
 
   void _navigateTo(BuildContext context, int index) {
     Navigator.of(context).pop();
-    setState(() => _activeIndex = index);
 
     if (index == 4) {
       Navigator.of(context).push(
@@ -265,7 +262,7 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
                   Icon(Icons.logout, size: 18, color: AppColors.errorRed),
                   SizedBox(width: 8),
                   Text(
-                    'Log Out',
+                    'Cerrar Sesión',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
