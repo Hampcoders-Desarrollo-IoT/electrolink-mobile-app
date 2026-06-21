@@ -2,7 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_app_electrolink/main.dart';
 
 void main() {
-  testWidgets('Dashboard renders', (WidgetTester tester) async {
+
+  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(const ElectroLinkApp());
+
     await tester.pumpWidget(const ElectroLinkApp());
     await tester.pumpAndSettle();
     expect(find.text('ElectroLink'), findsOneWidget);
@@ -20,5 +24,6 @@ void main() {
     // Verify that our counter has incremented.
     expect(find.text('0'), findsNothing);
     expect(find.text('1'), findsOneWidget);
+    
   });
 }
