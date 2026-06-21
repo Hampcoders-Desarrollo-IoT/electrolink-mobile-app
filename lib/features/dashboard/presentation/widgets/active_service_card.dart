@@ -4,8 +4,13 @@ import '../../domain/models/dashboard_data.dart';
 
 class ActiveServiceCard extends StatelessWidget {
   final ActiveService service;
+  final VoidCallback? onViewDetails;
 
-  const ActiveServiceCard({super.key, required this.service});
+  const ActiveServiceCard({
+    super.key,
+    required this.service,
+    this.onViewDetails,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -133,19 +138,22 @@ class ActiveServiceCard extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Text(
-                  'View Details',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.darkNavy,
-                    letterSpacing: 0.14,
+              GestureDetector(
+                onTap: onViewDetails,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    'View Details',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.darkNavy,
+                      letterSpacing: 0.14,
+                    ),
                   ),
                 ),
               ),

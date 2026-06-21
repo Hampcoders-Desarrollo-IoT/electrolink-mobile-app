@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../analytics/presentation/pages/analytics_page.dart';
+import '../../../history/presentation/pages/history_page.dart';
+import '../../../profile/presentation/pages/profile_page.dart';
+import '../../../properties/presentation/pages/properties_page.dart';
+import '../../../subscription/presentation/pages/subscription_page.dart';
 
-class DashboardDrawer extends StatelessWidget {
+class DashboardDrawer extends StatefulWidget {
   const DashboardDrawer({super.key});
+
+  @override
+  State<DashboardDrawer> createState() => _DashboardDrawerState();
+}
+
+class _DashboardDrawerState extends State<DashboardDrawer> {
+  int _activeIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -184,34 +196,62 @@ class DashboardDrawer extends StatelessWidget {
   }
 
   Widget _buildNavLinks() {
+    final items = [
+      ('Home', Icons.home, 0),
+      ('Mis Propiedades', Icons.business_outlined, 1),
+      ('Historial de Servicios', Icons.history, 2),
+      ('Analytics & Consumption', Icons.analytics_outlined, 3),
+      ('Suscripción', Icons.card_membership_outlined, 4),
+      ('Profile', Icons.person_outline, 5),
+    ];
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Column(
-        children: [
-          _NavItem(
-            icon: Icons.home,
-            label: 'Home',
-            isActive: true,
-          ),
-          _NavItem(
-            icon: Icons.business_outlined,
-            label: 'Mis Propiedades',
-          ),
-          _NavItem(
-            icon: Icons.history,
-            label: 'Historial de Servicios',
-          ),
-          _NavItem(
-            icon: Icons.analytics_outlined,
-            label: 'Analytics & Consumption',
-          ),
-          _NavItem(
-            icon: Icons.person_outline,
-            label: 'Profile',
-          ),
-        ],
+        children: items.map((item) {
+          return _NavItem(
+            icon: item.$2,
+            label: item.$1,
+            isActive: _activeIndex == item.$3,
+            onTap: () => _navigateTo(context, item.$3),
+          );
+        }).toList(),
       ),
     );
+  }
+
+  void _navigateTo(BuildContext context, int index) {
+    Navigator.of(context).pop();
+    setState(() => _activeIndex = index);
+
+    switch (index) {
+      case 0:
+        break;
+      case 1:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const PropertiesPage()),
+        );
+        break;
+      case 2:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const HistoryPage()),
+        );
+        break;
+      case 3:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const AnalyticsPage()),
+        );
+        break;
+      case 4:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const SubscriptionPage()),
+        );
+        break;
+      case 5:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const ProfilePage()),
+        );
+        break;
+    }
   }
 
   Widget _buildFooter() {
@@ -260,42 +300,51 @@ class _NavItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isActive;
+  final VoidCallback? onTap;
 
   const _NavItem({
     required this.icon,
     required this.label,
     this.isActive = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(vertical: 2),
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: isActive ? AppColors.drawerActiveBg : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              size: 18,
-              color: isActive ? AppColors.drawerActiveText : AppColors.grayText,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                color: isActive ? AppColors.drawerActiveText : AppColors.grayText,
+        width: double.infinity,
+        margin: const EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isActive ? AppColors.drawerActiveBg : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 18,
+                color: isActive
+                    ? AppColors.drawerActiveText
+                    : AppColors.grayText,
               ),
-            ),
-          ],
+              const SizedBox(width: 12),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                  color: isActive
+                      ? AppColors.drawerActiveText
+                      : AppColors.grayText,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
