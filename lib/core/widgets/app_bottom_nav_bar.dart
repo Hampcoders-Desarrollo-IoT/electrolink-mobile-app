@@ -1,4 +1,4 @@
-import 'dart:math';
+
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
@@ -14,17 +14,13 @@ class AppBottomNavBar extends StatelessWidget {
 
   static const _items = [
     _NavItemData(Icons.home, 'Home'),
-    _NavItemData(Icons.business_outlined, 'Propiedades'),
-    _NavItemData(Icons.history, 'Historial'),
-    _NavItemData(Icons.analytics_outlined, 'Analytics'),
+    _NavItemData(Icons.business_outlined, 'Services'),
+    _NavItemData(Icons.history, 'IoT'),
     _NavItemData(Icons.person_outline, 'Profile'),
   ];
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final itemWidth = max(38.0, (screenWidth - 40) / _items.length);
-
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -40,7 +36,8 @@ class AppBottomNavBar extends StatelessWidget {
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      // Reducido el padding horizontal de 16 a 8 para ganar espacio
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: SafeArea(
         top: false,
         child: Row(
@@ -48,38 +45,44 @@ class AppBottomNavBar extends StatelessWidget {
           children: List.generate(_items.length, (index) {
             final item = _items[index];
             final isActive = index == currentIndex;
-            return GestureDetector(
-              onTap: () => onTap(index),
-              child: Container(
-                constraints: BoxConstraints(minWidth: itemWidth),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: isActive
-                    ? BoxDecoration(
-                        color: AppColors.accentYellow,
-                        borderRadius: BorderRadius.circular(9999),
-                      )
-                    : null,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      item.icon,
-                      size: 18,
-                      color: isActive ? AppColors.darkNavy : AppColors.grayText,
-                    ),
-                    const SizedBox(height: 4),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        item.label,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: isActive ? AppColors.darkNavy : AppColors.grayText,
+
+            // Envolvemos cada botón en un Expanded para que distribuyan el espacio equitativamente
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => onTap(index),
+                child: Container(
+                  // Reducido el padding horizontal interno de 12 a 4 para evitar desbordamientos
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                  decoration: isActive
+                      ? BoxDecoration(
+                    color: AppColors.accentYellow,
+                    borderRadius: BorderRadius.circular(9999),
+                  )
+                      : null,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        item.icon,
+                        size: 18,
+                        color: isActive ? AppColors.darkNavy : AppColors.grayText,
+                      ),
+                      const SizedBox(height: 4),
+                      Flexible( // Flexible evita que el texto rompa el diseño si es muy largo
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            item.label,
+                            style: TextStyle(
+                              fontSize: 11, // Reducido ligeramente de 12 a 11 para asegurar espacio
+                              fontWeight: FontWeight.w500,
+                              color: isActive ? AppColors.darkNavy : AppColors.grayText,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );

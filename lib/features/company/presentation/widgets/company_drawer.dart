@@ -1,3 +1,5 @@
+// lib/features/company/presentation/widgets/company_drawer.dart
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -27,24 +29,12 @@ class _CompanyDrawerState extends State<CompanyDrawer> {
               topRight: Radius.circular(12),
               bottomRight: Radius.circular(12),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x1A000000),
-                blurRadius: 15,
-                offset: Offset(0, 10),
-              ),
-              BoxShadow(
-                color: Color(0x1A000000),
-                blurRadius: 6,
-                offset: Offset(0, 4),
-              ),
-            ],
           ),
           child: Column(
             children: [
               _buildHeader(),
               _buildProfileCard(),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
               Expanded(child: _buildNavLinks()),
               _buildFooter(),
             ],
@@ -57,7 +47,7 @@ class _CompanyDrawerState extends State<CompanyDrawer> {
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
       child: Row(
         children: [
           Container(
@@ -73,7 +63,7 @@ class _CompanyDrawerState extends State<CompanyDrawer> {
           Text(
             'ElectroLink',
             style: GoogleFonts.hankenGrotesk(
-              fontSize: 32,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
               color: AppColors.darkNavy,
               letterSpacing: -0.8,
@@ -86,151 +76,142 @@ class _CompanyDrawerState extends State<CompanyDrawer> {
 
   Widget _buildProfileCard() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
-        width: 286,
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.appBarBg,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.borderLight.withValues(alpha: 0.3)),
         ),
-        child: SizedBox(
-          height: 123,
-          child: Stack(
-            children: [
-              Positioned(
-                left: 22,
-                top: 21,
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.brandLogoBg, width: 2),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x0D000000),
-                        blurRadius: 2,
-                        offset: Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(Icons.business,
-                      size: 32, color: AppColors.brandLogoBg),
-                ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey,
               ),
-              Positioned(
-                left: 100,
-                top: 8,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'TechCorp S.A.C.',
-                      style: GoogleFonts.hankenGrotesk(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.darkNavy,
-                      ),
+              child: const Icon(Icons.person, size: 28, color: Colors.white),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Facility Manager',
+                    style: GoogleFonts.hankenGrotesk(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.darkNavy,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Estado: Activo',
+                  ),
+                  Text(
+                    'ElectroLink Enterprise',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.grayText,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.planBadgeBg,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      'Premium Account',
                       style: GoogleFonts.jetBrainsMono(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.green,
-                        letterSpacing: 0.12,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.planBadgeText,
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Positioned(
-                left: 101,
-                top: 68,
-                child: Text(
-                  'RUC: 20123456789',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.idText,
                   ),
-                ),
+                ],
               ),
-              Positioned(
-                left: 101,
-                top: 86,
-                child: Container(
-                  padding: const EdgeInsets.only(left: 8, right: 28.02),
-                  decoration: BoxDecoration(
-                    color: AppColors.planBadgeBg,
-                    borderRadius: BorderRadius.circular(9999),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.star,
-                          size: 12.25, color: AppColors.planBadgeText),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Enterprise Premium',
-                        style: GoogleFonts.jetBrainsMono(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.planBadgeText,
-                          letterSpacing: 0.12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildNavLinks() {
-    final items = [
-      ('Dashboard', Icons.dashboard, 0),
-      ('Sedes', Icons.business_outlined, 1),
-      ('Servicios', Icons.build_outlined, 2),
-      ('Analytics', Icons.analytics_outlined, 3),
-      ('Suscripción', Icons.card_membership_outlined, 4),
-      ('Perfil', Icons.person_outline, 5),
-    ];
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Column(
-        children: items.map((item) {
-          return _NavItem(
-            icon: item.$2,
-            label: item.$1,
-            isActive: widget.currentIndex == item.$3,
-            onTap: () => _navigateTo(context, item.$3),
-          );
-        }).toList(),
-      ),
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      children: [
+        // SECCIÓN PRINCIPAL
+        _NavItem(
+          icon: Icons.home_outlined,
+          label: 'Home',
+          isActive: widget.currentIndex == 0,
+          onTap: () => _navigateToTab(0),
+        ),
+        _NavItem(
+          icon: Icons.engineering_outlined,
+          label: 'Service Management',
+          isActive: widget.currentIndex == 1,
+          onTap: () => _navigateToTab(1),
+        ),
+        _NavItem(
+          icon: Icons.sensors_outlined,
+          label: 'IoT Monitoring',
+          isActive: widget.currentIndex == 2,
+          onTap: () => _navigateToTab(2),
+        ),
+        _NavItem(
+          icon: Icons.person_outline,
+          label: 'Profile',
+          isActive: widget.currentIndex == 3,
+          onTap: () => _navigateToTab(3),
+        ),
+
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+          child: Text(
+            'ADMINISTRATION',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: AppColors.grayText,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+
+        // SECCIÓN ADMINISTRACIÓN
+        _NavItem(
+          icon: Icons.credit_card_outlined,
+          label: 'Subscription',
+          isActive: false,
+          onTap: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const SubscriptionPage()),
+            );
+          },
+        ),
+        _NavItem(
+          icon: Icons.settings_outlined,
+          label: 'Settings',
+          isActive: false,
+          onTap: () {
+            // Lógica para Settings si cuentas con ella
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
     );
   }
 
-  void _navigateTo(BuildContext context, int index) {
-    Navigator.of(context).pop();
-
-    if (index == 4) {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const SubscriptionPage()),
-      );
-      return;
-    }
-
-    final tabMap = {0: 0, 1: 1, 2: 2, 3: 3, 5: 4};
-    final tabIndex = tabMap[index];
-    if (tabIndex != null) {
-      widget.onNavigateToTab?.call(tabIndex);
-    }
+  void _navigateToTab(int index) {
+    Navigator.of(context).pop(); // Cierra el Drawer
+    widget.onNavigateToTab?.call(index); // Cambia el IndexedStack
   }
 
   Widget _buildFooter() {
@@ -239,35 +220,28 @@ class _CompanyDrawerState extends State<CompanyDrawer> {
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       child: Column(
         children: [
-          const Divider(
-            color: AppColors.borderLight,
-            height: 1,
-            thickness: 1,
-          ),
-          const SizedBox(height: 17),
+          const Divider(color: AppColors.borderLight, height: 1),
+          const SizedBox(height: 16),
           InkWell(
             borderRadius: BorderRadius.circular(8),
             onTap: () {
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (_) => const AuthScreen()),
-                (route) => false,
+                    (route) => false,
               );
             },
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
                 children: [
-                  Icon(Icons.logout, size: 18, color: AppColors.errorRed),
-                  SizedBox(width: 8),
+                  const Icon(Icons.logout, size: 20, color: AppColors.errorRed),
+                  const SizedBox(width: 12),
                   Text(
-                    'Cerrar Sesión',
+                    'Logout',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                       color: AppColors.errorRed,
-                      letterSpacing: 0.28,
                     ),
                   ),
                 ],
@@ -289,46 +263,42 @@ class _NavItem extends StatelessWidget {
   const _NavItem({
     required this.icon,
     required this.label,
-    this.isActive = false,
+    required this.isActive,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
       child: Container(
-        width: double.infinity,
-        margin: const EdgeInsets.symmetric(vertical: 2),
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: isActive ? AppColors.drawerActiveBg : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                size: 18,
-                color: isActive
-                    ? AppColors.drawerActiveText
-                    : AppColors.grayText,
-              ),
-              const SizedBox(width: 12),
-              Text(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          // Si está activo usa un color sutil verde/azul del mockup, si no transparente
+          color: isActive ? AppColors.drawerActiveBg : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: isActive ? AppColors.drawerActiveText : AppColors.grayText,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
                 label,
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                  color: isActive
-                      ? AppColors.drawerActiveText
-                      : AppColors.grayText,
+                  fontSize: 15,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                  color: isActive ? AppColors.drawerActiveText : AppColors.darkNavy,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

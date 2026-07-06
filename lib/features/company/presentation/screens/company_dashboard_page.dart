@@ -1,5 +1,7 @@
+// lib/features/company/presentation/screens/company_dashboard_page.dart
+
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_theme.dart';
+
 import '../../../../core/widgets/app_top_bar.dart';
 
 class CompanyDashboardPage extends StatelessWidget {
@@ -14,19 +16,31 @@ class CompanyDashboardPage extends StatelessWidget {
         AppTopBar(onMenuTap: onMenuTap),
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+            // El fondo es un gris muy claro azulado sutil según el diseño
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildWelcomeSection(),
+                const SizedBox(height: 20),
+                _buildCriticalAlertCard(),
+                const SizedBox(height: 16),
+                _buildTotalConsumptionCard(),
+                const SizedBox(height: 16),
+                _buildPowerFactorCard(),
+                const SizedBox(height: 16),
+                _buildActiveDevicesCard(),
                 const SizedBox(height: 24),
-                _buildMetricsRow(),
-                const SizedBox(height: 24),
-                _buildActiveServiceCard(),
-                const SizedBox(height: 24),
-                _buildIoTStatusCard(),
-                const SizedBox(height: 24),
-                _buildPropertyPortfolioPreview(),
+                const Text(
+                  'Recent Activity',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _buildRecentActivityList(),
               ],
             ),
           ),
@@ -35,252 +49,88 @@ class CompanyDashboardPage extends StatelessWidget {
     );
   }
 
+  // Seccion de Bienvenida ("Good Morning, Alex")
   Widget _buildWelcomeSection() {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Panel Corporativo',
+        Text(
+          'Good Morning, Alex',
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 26,
             fontWeight: FontWeight.bold,
-            color: AppColors.darkNavy,
+            color: Colors.black,
+            letterSpacing: -0.5,
           ),
         ),
-        const SizedBox(height: 4),
-        const Text(
-          'Bienvenido, TechCorp S.A.C.',
+        SizedBox(height: 4),
+        Text(
+          'Here is the status of your facilities today.',
           style: TextStyle(
             fontSize: 14,
-            color: AppColors.grayText,
+            color: Colors.grey,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildMetricsRow() {
-    return Row(
-      children: [
-        Expanded(child: _buildMetricCard('Sedes Activas', '3', Icons.business, AppColors.primaryBlue)),
-        const SizedBox(width: 12),
-        Expanded(child: _buildMetricCard('Servicios Mes', '8', Icons.build_outlined, AppColors.green)),
-        const SizedBox(width: 12),
-        Expanded(child: _buildMetricCard('Ahorro Est.', 'S/2,400', Icons.trending_down, AppColors.accentYellow)),
-      ],
-    );
-  }
-
-  Widget _buildMetricCard(String title, String value, IconData icon, Color color) {
+  // Tarjeta de Alerta Crítica (Fondo Rosado/Rojo claro)
+  Widget _buildCriticalAlertCard() {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFFDE8E8), // Rosado de alerta
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.lightGray),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0D000000),
-            blurRadius: 6,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 20, color: color),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.darkNavy,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.grayText,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActiveServiceCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF2E3A59),
-            Color(0xFF182442),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x1A000000),
-            blurRadius: 6,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.engineering, color: Colors.white, size: 20),
-              ),
-              const SizedBox(width: 12),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Servicio Activo',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color(0xAAFFFFFF),
-                    ),
-                  ),
-                  SizedBox(height: 2),
-                  Text(
-                    'Mantenimiento Eléctrico - Sede Principal',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              _buildServiceDetail('Técnico', 'Carlos S.'),
-              const SizedBox(width: 24),
-              _buildServiceDetail('Estado', 'En Progreso'),
-              const SizedBox(width: 24),
-              _buildServiceDetail('Llegada', '14:05'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildServiceDetail(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 11,
-            color: Color(0xAAFFFFFF),
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildIoTStatusCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.lightGray),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0D000000),
-            blurRadius: 6,
-            offset: Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: const Color(0xFFF8B4B4)),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.greenBg,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.wifi, size: 24, color: AppColors.green),
-          ),
-          const SizedBox(width: 16),
+          const Icon(Icons.warning_rounded, color: Color(0xFF9B1C1C), size: 24),
+          const SizedBox(width: 12),
           const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Monitoreo IoT',
+                  'Critical Alert',
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.darkNavy,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF9B1C1C),
                   ),
                 ),
                 SizedBox(height: 4),
                 Text(
-                  '3 dispositivos activos | Consumo en tiempo real',
+                  'Voltage Spike detected in Circuit A-4. 2 mins ago.',
                   style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.grayText,
+                    color: Color(0xFF9B1C1C),
+                    height: 1.3,
                   ),
                 ),
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.greenBg,
-              borderRadius: BorderRadius.circular(9999),
-              border: Border.all(color: AppColors.greenBorder),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF9B1C1C),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              elevation: 0,
             ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.check_circle, size: 10, color: AppColors.green),
-                SizedBox(width: 4),
-                Text(
-                  'Activo',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.green,
-                  ),
-                ),
-              ],
+            child: const Text(
+              'View Details',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -288,21 +138,15 @@ class CompanyDashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPropertyPortfolioPreview() {
+  // Tarjeta de Consumo Total (Muestra el gran 1,240.5 kWh)
+  Widget _buildTotalConsumptionCard() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.lightGray),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0D000000),
-            blurRadius: 6,
-            offset: Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -310,118 +154,290 @@ class CompanyDashboardPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Portafolio de Sedes',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.darkNavy,
-                ),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: const Row(
-                  children: [
-                    Text(
-                      'Ver todas',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.darkNavy,
-                      ),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'TOTAL CONSUMPTION',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
                     ),
-                    SizedBox(width: 4),
-                    Icon(Icons.arrow_forward_ios, size: 8, color: AppColors.darkNavy),
-                  ],
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'This Month',
+                    style: TextStyle(fontSize: 13, color: Colors.grey),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE6F4EA), // Verde muy claro
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text(
+                  'Est. Cost: \$245.00',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF137333),
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          _buildPropertyRow('Sede Principal', 'San Isidro', 'OCCUPIED', true),
-          const Divider(height: 24, color: AppColors.lightGray),
-          _buildPropertyRow('Sucursal Surco', 'Surco', 'OCCUPIED', false),
-          const Divider(height: 24, color: AppColors.lightGray),
-          _buildPropertyRow('Oficina Callao', 'Callao', 'VACANT', false),
+          const SizedBox(height: 16),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              const Text(
+                '1,240.5',
+                style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  letterSpacing: -1,
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'kWh',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Row(
+            children: [
+              Icon(Icons.trending_down, color: Color(0xFF137333), size: 16),
+              SizedBox(width: 4),
+              Text(
+                '-4.2% vs last week',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF137333),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildPropertyRow(String name, String location, String status, bool isPrimary) {
-    return Row(
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: AppColors.lightGray,
-            borderRadius: BorderRadius.circular(8),
+  // Tarjeta de Factor de Potencia (0.94 Healthy)
+  Widget _buildPowerFactorCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'POWER FACTOR',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
           ),
-          child: const Icon(Icons.business, size: 20, color: AppColors.grayText),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          SizedBox(height: 8),
+          Row(
             children: [
-              Row(
-                children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.darkText,
-                    ),
-                  ),
-                  if (isPrimary) ...[
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryBlue.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Text(
-                        'Principal',
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.primaryBlue,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-              const SizedBox(height: 2),
               Text(
-                location,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.grayText,
+                '0.94',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(width: 8),
+              Icon(Icons.circle, color: Color(0xFF137333), size: 12),
+              SizedBox(width: 4),
+              Text(
+                'Healthy',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF137333),
                 ),
               ),
             ],
           ),
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-          decoration: BoxDecoration(
-            color: status == 'OCCUPIED' ? AppColors.greenBg : AppColors.lightGray,
-            borderRadius: BorderRadius.circular(9999),
-          ),
-          child: Text(
-            status == 'OCCUPIED' ? 'Ocupado' : 'Vacante',
+        ],
+      ),
+    );
+  }
+
+  // Tarjeta de Dispositivos Activos (12/12 con barra de progreso verde)
+  Widget _buildActiveDevicesCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'ACTIVE DEVICES',
             style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              color: status == 'OCCUPIED' ? AppColors.green : AppColors.grayText,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  const Text(
+                    '12',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    '/12',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                width: 100,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE5E7EB),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: FractionallySizedBox(
+                  alignment: Alignment.centerLeft,
+                  widthFactor: 1.0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0F766E),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Lista contenedora de Actividades Recientes
+  Widget _buildRecentActivityList() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        children: [
+          _buildActivityItem(
+            icon: Icons.build_outlined,
+            title: 'Service Scheduled for Property X',
+            subtitle: 'HVAC Maintenance - Technician John Doe',
+            time: '2 hrs ago',
+          ),
+          const Divider(height: 1, color: Color(0xFFE5E7EB)),
+          _buildActivityItem(
+            icon: Icons.description_outlined,
+            title: 'Monthly Report Generated',
+            subtitle: 'October Energy Usage Summary',
+            time: 'Yesterday',
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Widget para cada celda de actividad individual
+  Widget _buildActivityItem({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required String time,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF3F4F6), // Fondo gris sutil para el icono
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: Colors.grey[700], size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    height: 1.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            time,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[500],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
