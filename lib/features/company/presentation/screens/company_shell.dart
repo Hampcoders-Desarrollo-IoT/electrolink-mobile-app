@@ -3,10 +3,14 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_bottom_nav_bar.dart';
+import '../../../../core/network/api_client.dart';
+import '../../../../core/network/api_endpoints.dart';
+import '../../../device_onboarding/data/repositories/onboarding_repository_impl.dart';
+import '../../../device_onboarding/presentation/pages/onboarding_wizard_page.dart';
 import '../widgets/company_drawer.dart';
 import 'company_dashboard_page.dart';
 import 'package:mobile_app_electrolink/features/company/presentation/screens/company_services_page.dart';
-import 'company_iot_page.dart'; // Asegúrate de importar tu nueva página de IoT
+import 'company_iot_page.dart';
 import 'company_profile_page.dart';
 import '../../../service_request/presentation/pages/service_request_page.dart';
 
@@ -70,6 +74,7 @@ class _CompanyShellState extends State<CompanyShell> {
         onTap: _onTabSelected,
       ),
       // El botón flotante de agregar servicio ahora se muestra en Home (0) o Services (1)
+      // En IoT (2) abre el onboarding de dispositivos
       floatingActionButton: _selectedIndex == 0 || _selectedIndex == 1
           ? GestureDetector(
         onTap: () {
@@ -99,7 +104,40 @@ class _CompanyShellState extends State<CompanyShell> {
           child: const Icon(Icons.add, color: Colors.white, size: 24),
         ),
       )
-          : null,
+          : _selectedIndex == 2
+              ? GestureDetector(
+                  onTap: () {
+                    final client = ApiClient(baseUrl: ApiEndpoints.baseUrl);
+                    final repo = OnboardingRepositoryImpl(client);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => OnboardingWizardPage(repository: repo),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 56,
+                    height: 56,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primaryBlue,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0x1A000000),
+                          blurRadius: 15,
+                          offset: Offset(0, 10),
+                        ),
+                        BoxShadow(
+                          color: Color(0x1A000000),
+                          blurRadius: 6,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(Icons.add, color: Colors.white, size: 24),
+                  ),
+                )
+              : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }

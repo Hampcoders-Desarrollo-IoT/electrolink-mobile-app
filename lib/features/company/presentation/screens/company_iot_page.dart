@@ -3,11 +3,25 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/app_top_bar.dart';
+import '../../../device_onboarding/presentation/pages/onboarding_wizard_page.dart';
+import '../../../../core/network/api_client.dart';
+import '../../../../core/network/api_endpoints.dart';
+import '../../../device_onboarding/data/repositories/onboarding_repository_impl.dart';
 
 class CompanyIotPage extends StatelessWidget {
   final VoidCallback? onMenuTap;
 
   const CompanyIotPage({super.key, this.onMenuTap});
+
+  void _openOnboarding(BuildContext context) {
+    final client = ApiClient(baseUrl: ApiEndpoints.baseUrl);
+    final repo = OnboardingRepositoryImpl(client);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => OnboardingWizardPage(repository: repo),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,15 +34,46 @@ class CompanyIotPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1. ACTIVE SENSOR NODES
-                const Text(
-                  'ACTIVE SENSOR NODES',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                    letterSpacing: 0.5,
-                  ),
+                // Add Device button row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'ACTIVE SENSOR NODES',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _openOnboarding(context),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E2A47),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.add, size: 14, color: Colors.white),
+                            SizedBox(width: 4),
+                            Text(
+                              'Añadir dispositivo',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 12),
                 _buildSensorNodesRow(),

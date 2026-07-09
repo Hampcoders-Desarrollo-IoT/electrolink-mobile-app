@@ -11,6 +11,10 @@ import '../../features/properties/presentation/pages/properties_page.dart';
 import '../../features/history/presentation/pages/history_page.dart';
 import '../../features/analytics/presentation/pages/analytics_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/device_onboarding/data/repositories/onboarding_repository_impl.dart';
+import '../../features/device_onboarding/presentation/pages/onboarding_wizard_page.dart';
+import '../network/api_client.dart';
+import '../network/api_endpoints.dart';
 
 class HomeownerShell extends StatefulWidget {
   final int initialIndex;
@@ -71,33 +75,71 @@ class _HomeownerShellState extends State<HomeownerShell> {
           onTap: _onTabSelected,
         ),
         floatingActionButton: _selectedIndex == 0
-            ? GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const ServiceRequestPage()),
-                  );
-                },
-                child: Container(
-                  width: 56,
-                  height: 56,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primaryBlue,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x1A000000),
-                        blurRadius: 15,
-                        offset: Offset(0, 10),
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      final client = ApiClient(baseUrl: ApiEndpoints.baseUrl);
+                      final repo = OnboardingRepositoryImpl(client);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => OnboardingWizardPage(repository: repo),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 56,
+                      height: 56,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF2D9CDB),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0x1A000000),
+                            blurRadius: 15,
+                            offset: Offset(0, 10),
+                          ),
+                          BoxShadow(
+                            color: Color(0x1A000000),
+                            blurRadius: 6,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      BoxShadow(
-                        color: Color(0x1A000000),
-                        blurRadius: 6,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
+                      child: const Icon(Icons.add_circle_outline, color: Colors.white, size: 24),
+                    ),
                   ),
-                  child: const Icon(Icons.add, color: Colors.white, size: 24),
-                ),
+                  const SizedBox(height: 12),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const ServiceRequestPage()),
+                      );
+                    },
+                    child: Container(
+                      width: 56,
+                      height: 56,
+                      decoration: const BoxDecoration(
+                        color: AppColors.primaryBlue,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0x1A000000),
+                            blurRadius: 15,
+                            offset: Offset(0, 10),
+                          ),
+                          BoxShadow(
+                            color: Color(0x1A000000),
+                            blurRadius: 6,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(Icons.add, color: Colors.white, size: 24),
+                    ),
+                  ),
+                ],
               )
             : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

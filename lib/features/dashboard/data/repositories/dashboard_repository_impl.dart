@@ -14,6 +14,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
         technicianName: 'Luis García',
       ),
       quickActions: [
+        QuickAction(label: 'Añadir Dispositivo', icon: 'add'),
         QuickAction(label: 'Nueva Solicitud', icon: 'add'),
         QuickAction(label: 'Mis Facturas', icon: 'receipt'),
         QuickAction(label: 'Soporte', icon: 'support'),

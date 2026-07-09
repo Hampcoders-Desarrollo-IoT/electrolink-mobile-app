@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_top_bar.dart';
+import '../../../../core/network/api_client.dart';
+import '../../../../core/network/api_endpoints.dart';
+import '../../../device_onboarding/data/repositories/onboarding_repository_impl.dart';
+import '../../../device_onboarding/presentation/pages/onboarding_wizard_page.dart';
+import '../../../service_request/presentation/pages/service_request_page.dart';
 import '../../domain/models/dashboard_data.dart';
 import '../bloc/dashboard_bloc.dart';
 import '../bloc/dashboard_state.dart';
@@ -26,14 +31,33 @@ class DashboardTab extends StatelessWidget {
           return Center(child: Text(state.message));
         }
         if (state is DashboardLoaded) {
-          return _buildBody(state.data);
+          return _buildBody(context, state.data);
         }
         return const SizedBox();
       },
     );
   }
 
-  Widget _buildBody(DashboardData data) {
+  void _onQuickActionTap(BuildContext context, String label) {
+    switch (label) {
+      case 'Añadir Dispositivo':
+        final client = ApiClient(baseUrl: ApiEndpoints.baseUrl);
+        final repo = OnboardingRepositoryImpl(client);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => OnboardingWizardPage(repository: repo),
+          ),
+        );
+        break;
+      case 'Nueva Solicitud':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const ServiceRequestPage()),
+        );
+        break;
+    }
+  }
+
+  Widget _buildBody(BuildContext context, DashboardData data) {
     return Column(
       children: [
         AppTopBar(onMenuTap: onMenuTap),
@@ -50,7 +74,10 @@ class DashboardTab extends StatelessWidget {
                   onViewDetails: () {},
                 ),
                 const SizedBox(height: 24),
-                QuickActionsSection(actions: data.quickActions),
+                QuickActionsSection(
+                  actions: data.quickActions,
+                  onActionTap: (label) => _onQuickActionTap(context, label),
+                ),
                 const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
