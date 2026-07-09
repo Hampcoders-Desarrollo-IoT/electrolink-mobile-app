@@ -64,17 +64,37 @@ class SuggestedThresholds {
 
 class DeviceOnboardingAnalysis {
   final String reasoning;
+  final String narrative;
   final SuggestedThresholds suggestedThresholds;
+  final String? analysisId;
 
   const DeviceOnboardingAnalysis({
     required this.reasoning,
+    this.narrative = '',
     required this.suggestedThresholds,
+    this.analysisId,
   });
 
   factory DeviceOnboardingAnalysis.fromJson(Map<String, dynamic> json) =>
       DeviceOnboardingAnalysis(
-        reasoning: json['reasoning'] as String,
+        reasoning: json['reasoning'] as String? ?? '',
+        narrative: json['narrative'] as String? ?? '',
         suggestedThresholds:
             SuggestedThresholds.fromJson(json['suggestedThresholds'] as Map<String, dynamic>),
+        analysisId: json['analysisId'] as String?,
       );
+
+  DeviceOnboardingAnalysis copyWith({
+    String? reasoning,
+    String? narrative,
+    SuggestedThresholds? suggestedThresholds,
+    String? analysisId,
+  }) {
+    return DeviceOnboardingAnalysis(
+      reasoning: reasoning ?? this.reasoning,
+      narrative: narrative ?? this.narrative,
+      suggestedThresholds: suggestedThresholds ?? this.suggestedThresholds,
+      analysisId: analysisId ?? this.analysisId,
+    );
+  }
 }

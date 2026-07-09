@@ -36,4 +36,14 @@ class ConfirmThresholds extends OnboardingEvent {
   List<Object?> get props => [profileId];
 }
 
+class AdjustWithAI extends OnboardingEvent {
+  final String analysisId;
+  final String userMessage;
+
+  const AdjustWithAI({required this.analysisId, required this.userMessage});
+
+  @override
+  List<Object?> get props => [analysisId, userMessage];
+}
+
 class ResetOnboarding extends OnboardingEvent {}

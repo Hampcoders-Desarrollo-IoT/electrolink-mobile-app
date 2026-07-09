@@ -3,6 +3,8 @@ class ApiEndpoints {
 
   static const String analyzeOnboarding =
       '/profiles/me/device-onboarding/analyze';
+  static const String adjustOnboarding =
+      '/profiles/me/device-onboarding/adjust';
 
   static String thresholds(String profileId) =>
       '/profiles/$profileId/thresholds';

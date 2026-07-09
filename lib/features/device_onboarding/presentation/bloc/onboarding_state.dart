@@ -21,10 +21,23 @@ class OnboardingStep2Analyzing extends OnboardingState {
   List<Object?> get props => [request];
 }
 
-class OnboardingStep3Confirmation extends OnboardingState {
+class OnboardingStep2AnalysisResult extends OnboardingState {
+  final DeviceOnboardingRequest request;
   final DeviceOnboardingAnalysis analysis;
 
-  const OnboardingStep3Confirmation(this.analysis);
+  const OnboardingStep2AnalysisResult({
+    required this.request,
+    required this.analysis,
+  });
+
+  @override
+  List<Object?> get props => [request, analysis];
+}
+
+class OnboardingStep3Adjusting extends OnboardingState {
+  final DeviceOnboardingAnalysis analysis;
+
+  const OnboardingStep3Adjusting(this.analysis);
 
   @override
   List<Object?> get props => [analysis];
@@ -65,4 +78,23 @@ class OnboardingConfirmError extends OnboardingState {
 
   @override
   List<Object?> get props => [analysis, message];
+}
+
+class OnboardingAdjustingWithAI extends OnboardingState {
+  final DeviceOnboardingAnalysis currentAnalysis;
+
+  const OnboardingAdjustingWithAI(this.currentAnalysis);
+
+  @override
+  List<Object?> get props => [currentAnalysis];
+}
+
+class OnboardingAdjustError extends OnboardingState {
+  final DeviceOnboardingAnalysis currentAnalysis;
+  final String message;
+
+  const OnboardingAdjustError(this.currentAnalysis, this.message);
+
+  @override
+  List<Object?> get props => [currentAnalysis, message];
 }
