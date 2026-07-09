@@ -55,14 +55,16 @@ class AuthAuthenticated extends AuthState {
   final String userId;
   final String email;
   final String profileId;
+  final bool isNewUser;
   const AuthAuthenticated({
     required this.token,
     required this.userId,
     required this.email,
     required this.profileId,
+    this.isNewUser = false,
   });
   @override
-  List<Object?> get props => [token, userId, email, profileId];
+  List<Object?> get props => [token, userId, email, profileId, isNewUser];
 }
 
 class AuthUnauthenticated extends AuthState {}
@@ -155,7 +157,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final email = data['email'] as String;
       final profileId = _jwtProfileId(token);
       await _tokenService.saveToken(token);
-      emit(AuthAuthenticated(token: token, userId: userId, email: email, profileId: profileId));
+      emit(AuthAuthenticated(token: token, userId: userId, email: email, profileId: profileId, isNewUser: true));
     } on DioException catch (e) {
       final msg = e.response?.data?['message']?.toString() ?? e.message ?? 'Error de conexión';
       emit(AuthError(msg));

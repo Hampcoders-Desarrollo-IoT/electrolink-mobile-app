@@ -41,8 +41,9 @@ class _HomeownerShellState extends State<HomeownerShell> {
 
   @override
   Widget build(BuildContext context) {
+    final apiClient = ApiClient(baseUrl: ApiEndpoints.baseUrl);
     return BlocProvider(
-      create: (_) => DashboardBloc()..add(const FetchDashboard()),
+      create: (_) => DashboardBloc(client: apiClient)..add(const FetchDashboard()),
       child: Scaffold(
         key: _scaffoldKey,
         drawer: DashboardDrawer(

@@ -6,6 +6,15 @@ class PlanSummary extends Equatable {
 
   const PlanSummary({required this.name, required this.isActive});
 
+  factory PlanSummary.fromSubscription(Map<String, dynamic>? json) {
+    if (json == null) return const PlanSummary(name: 'Free', isActive: false);
+    final status = json['status'] as String? ?? 'Inactive';
+    return PlanSummary(
+      name: json['planType'] as String? ?? 'Free',
+      isActive: status == 'Active',
+    );
+  }
+
   @override
   List<Object> get props => [name, isActive];
 }
@@ -70,6 +79,32 @@ class DashboardData extends Equatable {
     required this.quickActions,
     required this.properties,
   });
+
+  factory DashboardData.fromApi({
+    required Map<String, dynamic>? subscriptionJson,
+    required Map<String, dynamic>? profileJson,
+  }) {
+    final planSummary = PlanSummary.fromSubscription(subscriptionJson);
+
+    return DashboardData(
+      planSummary: planSummary,
+      activeService: const ActiveService(
+        title: '',
+        subtitle: '',
+        location: '',
+        technicianInitials: '',
+        technicianName: '',
+      ),
+      quickActions: const [
+        QuickAction(label: 'Añadir Dispositivo', icon: 'add'),
+        QuickAction(label: 'Nueva Solicitud', icon: 'add'),
+        QuickAction(label: 'Mis Facturas', icon: 'receipt'),
+        QuickAction(label: 'Soporte', icon: 'support'),
+        QuickAction(label: 'Historial', icon: 'history'),
+      ],
+      properties: const [],
+    );
+  }
 
   @override
   List<Object> get props => [planSummary, activeService, quickActions, properties];

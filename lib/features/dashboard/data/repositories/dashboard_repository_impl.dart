@@ -1,34 +1,31 @@
+import 'package:mobile_app_electrolink/core/network/api_client.dart';
+import 'package:mobile_app_electrolink/core/network/api_endpoints.dart';
 import '../../domain/models/dashboard_data.dart';
 import '../../domain/repositories/dashboard_repository.dart';
 
 class DashboardRepositoryImpl implements DashboardRepository {
+  final ApiClient _client;
+
+  DashboardRepositoryImpl(this._client);
+
   @override
   Future<DashboardData> getDashboardData() async {
-    return const DashboardData(
-      planSummary: PlanSummary(name: 'Plan Premium', isActive: true),
-      activeService: ActiveService(
-        title: 'Mantenimiento de',
-        subtitle: 'Tablero',
-        location: 'Casa Principal',
-        technicianInitials: 'LG',
-        technicianName: 'Luis García',
-      ),
-      quickActions: [
-        QuickAction(label: 'Añadir Dispositivo', icon: 'add'),
-        QuickAction(label: 'Nueva Solicitud', icon: 'add'),
-        QuickAction(label: 'Mis Facturas', icon: 'receipt'),
-        QuickAction(label: 'Soporte', icon: 'support'),
-        QuickAction(label: 'Historial', icon: 'history'),
-      ],
-      properties: [
-        Property(
-          name: 'Casa Principal',
-          address: 'Av. Siempre Viva 742',
-          isOk: true,
-          lastRevision: '12 Oct 2023',
-          activeAssets: '4 Tableros',
-        ),
-      ],
+    Map<String, dynamic>? subscriptionJson;
+    Map<String, dynamic>? profileJson;
+
+    try {
+      final subResponse = await _client.get(ApiEndpoints.mySubscription);
+      subscriptionJson = subResponse.data as Map<String, dynamic>?;
+    } catch (_) {}
+
+    try {
+      final profResponse = await _client.get(ApiEndpoints.myProfile);
+      profileJson = profResponse.data as Map<String, dynamic>?;
+    } catch (_) {}
+
+    return DashboardData.fromApi(
+      subscriptionJson: subscriptionJson,
+      profileJson: profileJson,
     );
   }
 }

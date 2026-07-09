@@ -7,6 +7,7 @@ import 'package:mobile_app_electrolink/core/widgets/homeowner_shell.dart';
 import 'package:mobile_app_electrolink/features/technical/presentation/screens/technical_dashboard_screen.dart';
 import 'package:mobile_app_electrolink/features/company/presentation/screens/company_shell.dart';
 import 'package:mobile_app_electrolink/core/auth/auth_bloc.dart';
+import 'package:mobile_app_electrolink/features/profile_completion/presentation/screens/complete_profile_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -74,6 +75,13 @@ class _AuthScreenState extends State<AuthScreen> {
 
   void _onAuthStateChange(BuildContext context, AuthState state) {
     if (state is AuthAuthenticated) {
+      if (state.isNewUser) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const CompleteProfileScreen()),
+        );
+        return;
+      }
       final Widget destination;
       switch (_selectedRole) {
         case UserRole.technician:

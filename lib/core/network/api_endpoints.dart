@@ -6,4 +6,13 @@ class ApiEndpoints {
 
   static String thresholds(String profileId) =>
       '/profiles/$profileId/thresholds';
+
+  static const String completeHomeowner = '/profiles/me/complete/homeowner';
+
+  static const String myProfile = '/profiles/me';
+  static const String mySubscription = '/subscriptions/me';
+  static const String myPaymentHistory = '/subscriptions/me/payment-history';
+  static const String checkout = '/subscriptions/checkout';
+  static const String cancelSubscription = '/subscriptions/me/cancel';
+  static const String customerPortal = '/subscriptions/me/portal';
 }
