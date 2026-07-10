@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/auth/auth_bloc.dart';
 import '../../../../features/auth/presentation/screens/auth_screen.dart';
-import '../../../subscription/presentation/pages/subscription_page.dart';
+import '../../../subscription/presentation/pages/subscription_plan_page.dart';
 
 class DashboardDrawer extends StatefulWidget {
   final void Function(int index)? onNavigateToTab;
@@ -206,8 +206,8 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
   Widget _buildNavLinks() {
     final items = [
       ('Home', Icons.home, 0),
-      ('Mis Propiedades', Icons.business_outlined, 1),
-      ('Historial de Servicios', Icons.history, 2),
+      ('Services', Icons.build_outlined, 1),
+      ('IoT Monitoring', Icons.sensors_outlined, 2),
       ('Analytics & Consumption', Icons.analytics_outlined, 3),
       ('Suscripción', Icons.card_membership_outlined, 4),
       ('Profile', Icons.person_outline, 5),
@@ -233,7 +233,7 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
 
     if (index == 4) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const SubscriptionPage()),
+        MaterialPageRoute(builder: (_) => const SubscriptionPlanPage()),
       );
       return;
     }
