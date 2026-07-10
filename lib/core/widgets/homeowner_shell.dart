@@ -7,8 +7,8 @@ import '../../features/dashboard/presentation/bloc/dashboard_event.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/dashboard/presentation/widgets/dashboard_drawer.dart';
 import '../../features/service_request/presentation/pages/service_request_page.dart';
-import '../../features/properties/presentation/pages/properties_page.dart';
-import '../../features/history/presentation/pages/history_page.dart';
+import '../../features/services/presentation/pages/services_page.dart';
+import '../../features/company/presentation/screens/company_iot_page.dart';
 import '../../features/analytics/presentation/pages/analytics_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/device_onboarding/data/repositories/onboarding_repository_impl.dart';
@@ -56,10 +56,10 @@ class _HomeownerShellState extends State<HomeownerShell> {
               DashboardTab(
                 onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
               ),
-              PropertiesPage(
+              ServicesPage(
                 onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
               ),
-              HistoryPage(
+              CompanyIotPage(
                 onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
               ),
               AnalyticsPage(
@@ -142,7 +142,36 @@ class _HomeownerShellState extends State<HomeownerShell> {
                   ),
                 ],
               )
-            : null,
+            : _selectedIndex == 1
+                ? GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const ServiceRequestPage()),
+                      );
+                    },
+                    child: Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: AppColors.darkText,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x1A000000),
+                            blurRadius: 15,
+                            offset: Offset(0, 10),
+                          ),
+                          BoxShadow(
+                            color: Color(0x1A000000),
+                            blurRadius: 6,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(Icons.add, color: Colors.white, size: 24),
+                    ),
+                  )
+                : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );

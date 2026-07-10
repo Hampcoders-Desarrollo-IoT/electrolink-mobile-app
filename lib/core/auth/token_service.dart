@@ -19,7 +19,12 @@ class TokenService {
   }
 
   Future<void> loadToken() async {
-    _token = await _storage.read(key: _tokenKey);
+    try {
+      _token = await _storage.read(key: _tokenKey);
+    } catch (_) {
+      // Si el almacenamiento seguro no está disponible, se trata como sin sesión.
+      _token = null;
+    }
   }
 
   Future<void> clearToken() async {
