@@ -38,7 +38,7 @@ class _TechnicalDashboardScreenState extends State<TechnicalDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     // Definimos qué cuerpo (body) renderizar según el índice activo
-    final List<Widget> _screens = [
+    final List<Widget> screens = [
       _buildHomeBody(),                                                 // Índice 0: Home
       const Center(child: Text('Mi Catálogo (Próximamente)', style: TextStyle(color: Color(0xFF1E2746), fontWeight: FontWeight.bold))), // Índice 1: Catálogo
       ServicesScreen(onPublishTap: _navigateToPublishScreen),           // Índice 2: Servicios
@@ -66,7 +66,7 @@ class _TechnicalDashboardScreenState extends State<TechnicalDashboardScreen> {
           )
         ],
       ),
-      body: _screens[_selectedIndex], // Muestra la pantalla correspondiente
+      body: screens[_selectedIndex], // Muestra la pantalla correspondiente
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton(
         backgroundColor: const Color(0xFF1E2746),
@@ -115,7 +115,7 @@ class _TechnicalDashboardScreenState extends State<TechnicalDashboardScreen> {
                 ),
                 Switch(
                   value: isAvailable,
-                  activeColor: const Color(0xFF00BFA5),
+                  activeThumbColor: const Color(0xFF00BFA5),
                   onChanged: (value) => setState(() => isAvailable = value),
                 ),
               ],

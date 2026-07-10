@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_app_electrolink/core/auth/auth_bloc.dart';
 import 'package:mobile_app_electrolink/core/network/api_client.dart';
 import 'package:mobile_app_electrolink/core/network/api_endpoints.dart';
 import 'package:mobile_app_electrolink/core/widgets/homeowner_shell.dart';
@@ -243,7 +241,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Column(children: children),
     );
@@ -319,7 +317,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
           Expanded(child: Text(label, style: const TextStyle(fontSize: 14))),
           Switch(
             value: value,
-            activeColor: const Color(0xFF1E2746),
+            activeThumbColor: const Color(0xFF1E2746),
             onChanged: onChanged,
           ),
         ],
