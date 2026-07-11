@@ -23,7 +23,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(ProfileLoading());
     try {
       final profile = await _repository.getMyProfile();
-      emit(ProfileLoadSuccess(isComplete: profile.status == 'ACTIVE'));
+      emit(ProfileLoadSuccess(isComplete: profile.status.toUpperCase() == 'ACTIVE'));
     } on DioException catch (e) {
       emit(ProfileError(message: _extractError(e)));
     } catch (_) {
