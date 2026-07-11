@@ -76,9 +76,6 @@ class _OnboardingWizardShell extends StatelessWidget {
     if (state is OnboardingStep2AnalysisResult) {
       return Step2AnalysisPage(request: state.request);
     }
-    if (state is OnboardingStep3Confirmation) {
-      return Step3ConfirmationPage(analysis: state.analysis);
-    }
     if (state is OnboardingStep3Adjusting ||
         state is OnboardingConfirming ||
         state is OnboardingConfirmError ||
