@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/social_button.dart';
-import 'package:mobile_app_electrolink/core/enums/user_role.dart';
 import 'package:mobile_app_electrolink/core/widgets/homeowner_shell.dart';
 import 'package:mobile_app_electrolink/features/technical/presentation/screens/technical_dashboard_screen.dart';
 import 'package:mobile_app_electrolink/features/company/presentation/screens/company_shell.dart';
 import 'package:mobile_app_electrolink/core/auth/auth_bloc.dart';
 import 'package:mobile_app_electrolink/features/profile_completion/presentation/screens/complete_profile_screen.dart';
+import 'register_screen.dart';
 
+/// Pantalla inicial de la app: inicio de sesión.
+/// El alta de cuentas nuevas vive en [RegisterScreen] (registro de empresa).
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
 
@@ -17,60 +19,27 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  bool isLogin = true;
-  UserRole _selectedRole = UserRole.company;
-
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
-  }
-
-  void toggleView() {
-    setState(() {
-      isLogin = !isLogin;
-    });
   }
 
   void _submit() {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
     if (email.isEmpty || password.isEmpty) return;
-
-    if (isLogin) {
-      context.read<AuthBloc>().add(LoginRequested(email, password));
-    } else {
-      final confirm = _confirmPasswordController.text;
-      if (password != confirm) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Las contraseñas no coinciden')),
-        );
-        return;
-      }
-      context.read<AuthBloc>().add(RegisterRequested(
-        email: email,
-        password: password,
-        passwordConfirmation: confirm,
-        role: _roleApiValue(),
-      ));
-    }
+    context.read<AuthBloc>().add(LoginRequested(email, password));
   }
 
-  String _roleApiValue() {
-    switch (_selectedRole) {
-      case UserRole.technician:
-        return 'technician';
-      case UserRole.company:
-        return 'company';
-      case UserRole.homeowner:
-        return 'homeowner';
-    }
+  void _goToRegister() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RegisterScreen()),
+    );
   }
 
   void _onAuthStateChange(BuildContext context, AuthState state) {
@@ -82,14 +51,16 @@ class _AuthScreenState extends State<AuthScreen> {
         );
         return;
       }
+      // El sign-in devuelve el rol; se navega al shell que corresponde.
+      final normalizedRole = state.role.toUpperCase();
       final Widget destination;
-      switch (_selectedRole) {
-        case UserRole.technician:
-          destination = const TechnicalDashboardScreen();
-        case UserRole.company:
-          destination = const CompanyShell();
-        case UserRole.homeowner:
-          destination = const HomeownerShell();
+      if (normalizedRole.contains('TECHNICIAN') ||
+          normalizedRole.contains('MAKER')) {
+        destination = const TechnicalDashboardScreen();
+      } else if (normalizedRole.contains('HOMEOWNER')) {
+        destination = const HomeownerShell();
+      } else {
+        destination = const CompanyShell();
       }
       Navigator.pushReplacement(
         context,
@@ -152,11 +123,6 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                         const SizedBox(height: 30),
 
-                        if (!isLogin) ...[
-                          _buildRoleSelector(),
-                          const SizedBox(height: 20),
-                        ],
-
                         CustomTextField(
                           label: 'Correo Electrónico',
                           hint: 'ejemplo@electrolink.com',
@@ -172,25 +138,13 @@ class _AuthScreenState extends State<AuthScreen> {
                           controller: _passwordController,
                         ),
 
-                        if (!isLogin) ...[
-                          const SizedBox(height: 15),
-                          CustomTextField(
-                            label: 'Repetir Contraseña',
-                            hint: '********',
-                            icon: Icons.lock_outline,
-                            isPassword: true,
-                            controller: _confirmPasswordController,
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {},
+                            child: const Text('¿Olvidaste tu contraseña?', style: TextStyle(fontSize: 12, color: Colors.black54)),
                           ),
-                        ],
-
-                        if (isLogin)
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {},
-                              child: const Text('¿Olvidaste tu contraseña?', style: TextStyle(fontSize: 12, color: Colors.black54)),
-                            ),
-                          ),
+                        ),
 
                         const SizedBox(height: 20),
 
@@ -210,116 +164,54 @@ class _AuthScreenState extends State<AuthScreen> {
                                     width: 20,
                                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                   )
-                                : Text(isLogin ? 'Iniciar Sesión' : 'Registrarte'),
+                                : const Text('Iniciar Sesión'),
                           ),
                         ),
 
                         const SizedBox(height: 12),
 
-                        if (isLogin)
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                backgroundColor: const Color(0xFFD1E4FF),
-                                side: BorderSide.none,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              ),
-                              onPressed: toggleView,
-                              child: const Text('Registrarse', style: TextStyle(color: Color(0xFF1E2746))),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              backgroundColor: const Color(0xFFD1E4FF),
+                              side: BorderSide.none,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                             ),
+                            onPressed: _goToRegister,
+                            child: const Text('Registrarse', style: TextStyle(color: Color(0xFF1E2746))),
                           ),
+                        ),
                       ],
                     ),
                   ),
 
-                  if (isLogin) ...[
-                    const SizedBox(height: 30),
-                    const Row(
-                      children: [
-                        Expanded(child: Divider()),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text('O CONTINUAR CON', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                        ),
-                        Expanded(child: Divider()),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(child: SocialButton(label: 'Google', iconText: 'G')),
-                        const SizedBox(width: 15),
-                        Expanded(child: SocialButton(label: 'Apple', iconText: 'A')),
-                      ],
-                    ),
-                  ],
-
-                  if (!isLogin)
-                    TextButton(
-                      onPressed: toggleView,
-                      child: const Text('¿Ya tienes cuenta? Inicia Sesión', style: TextStyle(color: Colors.black54)),
-                    ),
+                  const SizedBox(height: 30),
+                  const Row(
+                    children: [
+                      Expanded(child: Divider()),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Text('O CONTINUAR CON', style: TextStyle(color: Colors.grey, fontSize: 10)),
+                      ),
+                      Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(child: SocialButton(label: 'Google', iconText: 'G')),
+                      const SizedBox(width: 15),
+                      Expanded(child: SocialButton(label: 'Apple', iconText: 'A')),
+                    ],
+                  ),
                 ],
               ),
             ),
           ),
         );
       },
-    );
-  }
-
-  Widget _buildRoleSelector() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Tipo de usuario', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
-        const SizedBox(height: 8),
-        Row(
-          children: UserRole.values.map((role) {
-            final isSelected = _selectedRole == role;
-            return Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: role != UserRole.values.last ? 8 : 0,
-                ),
-                child: GestureDetector(
-                  onTap: () => setState(() => _selectedRole = role),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFF1E2746) : Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: isSelected ? const Color(0xFF1E2746) : Colors.grey.shade300,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        Icon(
-                          role.icon,
-                          color: isSelected ? Colors.white : const Color(0xFF1E2746),
-                          size: 24,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          role.label,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: isSelected ? Colors.white : const Color(0xFF1E2746),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
     );
   }
 }

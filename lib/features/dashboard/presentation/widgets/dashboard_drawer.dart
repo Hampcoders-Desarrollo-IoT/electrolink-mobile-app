@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/auth/auth_bloc.dart';
 import '../../../../features/auth/presentation/screens/auth_screen.dart';
+import '../../../analytics/presentation/pages/analytics_page.dart';
 import '../../../subscription/presentation/pages/subscription_plan_page.dart';
 
 class DashboardDrawer extends StatefulWidget {
@@ -205,12 +206,12 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
 
   Widget _buildNavLinks() {
     final items = [
-      ('Home', Icons.home, 0),
-      ('Services', Icons.build_outlined, 1),
-      ('IoT Monitoring', Icons.sensors_outlined, 2),
-      ('Analytics & Consumption', Icons.analytics_outlined, 3),
+      ('Inicio', Icons.home, 0),
+      ('Servicios', Icons.build_outlined, 1),
+      ('Monitoreo IoT', Icons.sensors_outlined, 2),
+      ('Analytics y Consumo', Icons.analytics_outlined, 3),
       ('Suscripción', Icons.card_membership_outlined, 4),
-      ('Profile', Icons.person_outline, 5),
+      ('Perfil', Icons.person_outline, 5),
     ];
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -231,6 +232,18 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
     Navigator.of(context).pop();
     setState(() => _activeIndex = index);
 
+    // Analytics ya no es tab: se abre como página completa.
+    if (index == 3) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const Scaffold(
+            body: SafeArea(child: AnalyticsPage(showBack: true)),
+          ),
+        ),
+      );
+      return;
+    }
+
     if (index == 4) {
       Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => const SubscriptionPlanPage()),
@@ -238,7 +251,7 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
       return;
     }
 
-    final tabMap = {0: 0, 1: 1, 2: 2, 3: 3, 5: 4};
+    final tabMap = {0: 0, 1: 1, 2: 2, 5: 3};
     final tabIndex = tabMap[index];
     if (tabIndex != null) {
       widget.onNavigateToTab?.call(tabIndex);

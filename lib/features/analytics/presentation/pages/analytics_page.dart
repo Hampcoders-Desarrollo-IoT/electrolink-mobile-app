@@ -13,8 +13,9 @@ import '../widgets/period_tabs.dart';
 
 class AnalyticsPage extends StatelessWidget {
   final VoidCallback? onMenuTap;
+  final bool showBack;
 
-  const AnalyticsPage({super.key, this.onMenuTap});
+  const AnalyticsPage({super.key, this.onMenuTap, this.showBack = false});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,7 @@ class AnalyticsPage extends StatelessWidget {
       create: (_) => AnalyticsBloc(),
       child: Column(
         children: [
-          AppTopBar(onMenuTap: onMenuTap),
+          AppTopBar(showBack: showBack, onMenuTap: onMenuTap),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 96),
