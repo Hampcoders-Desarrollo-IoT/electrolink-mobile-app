@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../domain/models/device_onboarding_data.dart';
 import '../../domain/repositories/onboarding_repository.dart';
 import '../bloc/onboarding_bloc.dart';
 import '../bloc/onboarding_event.dart';
@@ -35,7 +36,7 @@ class _OnboardingWizardShell extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Añadir Dispositivo'),
+            title: Text(_titleFor(state)),
             backgroundColor: Colors.white,
             foregroundColor: AppColors.darkNavy,
             elevation: 0,
@@ -50,6 +51,21 @@ class _OnboardingWizardShell extends StatelessWidget {
     );
   }
 
+  String _titleFor(OnboardingState state) {
+    if (state is OnboardingStep2Analyzing ||
+        state is OnboardingStep2AnalysisResult) {
+      return 'Análisis con IA';
+    }
+    if (state is OnboardingStep3Adjusting ||
+        state is OnboardingConfirming ||
+        state is OnboardingConfirmError ||
+        state is OnboardingAdjustingWithAI ||
+        state is OnboardingAdjustError) {
+      return 'Ajustar Umbrales';
+    }
+    return 'Añadir Dispositivo';
+  }
+
   Widget _buildBody(BuildContext context, OnboardingState state) {
     if (state is OnboardingInitial || state is OnboardingStep1DeviceInfo) {
       return Step1DeviceInfoPage();
@@ -57,13 +73,19 @@ class _OnboardingWizardShell extends StatelessWidget {
     if (state is OnboardingStep2Analyzing) {
       return Step2AnalysisPage(request: state.request);
     }
-    if (state is OnboardingStep3Confirmation || state is OnboardingConfirming || state is OnboardingConfirmError) {
-      final analysis = state is OnboardingStep3Confirmation
-          ? state.analysis
-          : state is OnboardingConfirming
-              ? state.analysis
-              : (state as OnboardingConfirmError).analysis;
-      return Step3ConfirmationPage(analysis: analysis);
+    if (state is OnboardingStep2AnalysisResult) {
+      return Step2AnalysisPage(request: state.request);
+    }
+    if (state is OnboardingStep3Adjusting ||
+        state is OnboardingConfirming ||
+        state is OnboardingConfirmError ||
+        state is OnboardingAdjustingWithAI ||
+        state is OnboardingAdjustError) {
+      final analysis = _extractAnalysis(state);
+      if (analysis != null) {
+        return Step3ConfirmationPage(analysis: analysis);
+      }
+
     }
     if (state is OnboardingCompleted) {
       return _CompletionPage(message: state.message);
@@ -75,6 +97,15 @@ class _OnboardingWizardShell extends StatelessWidget {
       );
     }
     return const SizedBox();
+  }
+
+  DeviceOnboardingAnalysis? _extractAnalysis(OnboardingState state) {
+    if (state is OnboardingStep3Adjusting) return state.analysis;
+    if (state is OnboardingConfirming) return state.analysis;
+    if (state is OnboardingConfirmError) return state.analysis;
+    if (state is OnboardingAdjustingWithAI) return state.currentAnalysis;
+    if (state is OnboardingAdjustError) return state.currentAnalysis;
+    return null;
   }
 }
 

@@ -33,4 +33,20 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
       throw Exception('Error al guardar umbrales: ${e.message}');
     }
   }
+
+  @override
+  Future<DeviceOnboardingAnalysis> adjustAnalysis(String analysisId, String userMessage) async {
+    try {
+      final response = await _client.post(
+        ApiEndpoints.adjustOnboarding,
+        data: {
+          'analysisId': analysisId,
+          'userMessage': userMessage,
+        },
+      );
+      return DeviceOnboardingAnalysis.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw Exception('Error al ajustar: ${e.message}');
+    }
+  }
 }

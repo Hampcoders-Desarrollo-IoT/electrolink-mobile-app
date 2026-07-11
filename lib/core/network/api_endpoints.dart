@@ -6,7 +6,11 @@ class ApiEndpoints {
   static const String _v1 = '/api/v1';
 
   static const String analyzeOnboarding =
-      '$_v1/profiles/me/device-onboarding/analyze';
+
+      '/profiles/me/device-onboarding/analyze';
+  static const String adjustOnboarding =
+      '/profiles/me/device-onboarding/adjust';
+
 
   static String thresholds(String profileId) =>
       '$_v1/profiles/$profileId/thresholds';

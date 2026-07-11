@@ -12,6 +12,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<SubmitDeviceInfo>(_onSubmitDeviceInfo);
     on<AdjustThreshold>(_onAdjustThreshold);
     on<ConfirmThresholds>(_onConfirmThresholds);
+    on<AdjustWithAI>(_onAdjustWithAI);
     on<ResetOnboarding>((_, emit) => emit(OnboardingInitial()));
   }
 
@@ -24,7 +25,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     try {
       final analysis = await _repository.analyze(event.request);
       _lastAnalysis = analysis;
-      emit(OnboardingStep3Confirmation(analysis));
+      emit(OnboardingStep2AnalysisResult(
+        request: event.request,
+        analysis: analysis,
+      ));
     } catch (e) {
       emit(OnboardingError(e.toString().replaceFirst('Exception: ', '')));
     }
@@ -59,12 +63,11 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           : current.disconnectionThresholdMin,
     );
 
-    _lastAnalysis = DeviceOnboardingAnalysis(
-      reasoning: _lastAnalysis!.reasoning,
+    _lastAnalysis = _lastAnalysis!.copyWith(
       suggestedThresholds: updated,
     );
 
-    emit(OnboardingStep3Confirmation(_lastAnalysis!));
+    emit(OnboardingStep3Adjusting(_lastAnalysis!));
   }
 
   Future<void> _onConfirmThresholds(
@@ -84,6 +87,29 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           'Dispositivo configurado correctamente'));
     } catch (e) {
       emit(OnboardingConfirmError(
+        _lastAnalysis!,
+        e.toString().replaceFirst('Exception: ', ''),
+      ));
+    }
+  }
+
+  Future<void> _onAdjustWithAI(
+    AdjustWithAI event,
+    Emitter<OnboardingState> emit,
+  ) async {
+    if (_lastAnalysis == null) return;
+
+    emit(OnboardingAdjustingWithAI(_lastAnalysis!));
+
+    try {
+      final analysis = await _repository.adjustAnalysis(
+        event.analysisId,
+        event.userMessage,
+      );
+      _lastAnalysis = analysis;
+      emit(OnboardingStep3Adjusting(analysis));
+    } catch (e) {
+      emit(OnboardingAdjustError(
         _lastAnalysis!,
         e.toString().replaceFirst('Exception: ', ''),
       ));
