@@ -1,15 +1,14 @@
 class ApiEndpoints {
-  static const String baseUrl = 'http://127.0.0.1:8088';  // <- Mac port for run flutter
-  // static const String baseUrl = 'http://10.0.2.2:8088';  // <- Android Studio emulator port for run flutter
+  // static const String baseUrl = 'http://127.0.0.1:8088';  // <- Mac port for run flutter
+  static const String baseUrl = 'http://10.0.2.2:8088';  // <- Android Studio emulator port for run flutter
 
   // El backend :8088 sirve todas sus rutas bajo /api/v1 (igual que ApiConstants).
   static const String _v1 = '/api/v1';
 
   static const String analyzeOnboarding =
-
-      '/profiles/me/device-onboarding/analyze';
+      '$_v1/profiles/me/device-onboarding/analyze';
   static const String adjustOnboarding =
-      '/profiles/me/device-onboarding/adjust';
+      '$_v1/profiles/me/device-onboarding/adjust';
 
 
   static String thresholds(String profileId) =>
