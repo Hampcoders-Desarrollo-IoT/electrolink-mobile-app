@@ -55,16 +55,18 @@ class AuthAuthenticated extends AuthState {
   final String userId;
   final String email;
   final String profileId;
+  final String role;
   final bool isNewUser;
   const AuthAuthenticated({
     required this.token,
     required this.userId,
     required this.email,
     required this.profileId,
+    this.role = '',
     this.isNewUser = false,
   });
   @override
-  List<Object?> get props => [token, userId, email, profileId, isNewUser];
+  List<Object?> get props => [token, userId, email, profileId, role, isNewUser];
 }
 
 class AuthUnauthenticated extends AuthState {}
@@ -102,7 +104,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final userId = _jwtUserId(token);
       final email = _jwtEmail(token);
       final profileId = _jwtProfileId(token);
-      emit(AuthAuthenticated(token: token, userId: userId, email: email, profileId: profileId));
+      final role = _jwtRole(token);
+      emit(AuthAuthenticated(
+          token: token,
+          userId: userId,
+          email: email,
+          profileId: profileId,
+          role: role));
     } else {
       emit(AuthUnauthenticated());
     }
@@ -126,8 +134,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final userId = data['userId'] as String;
       final email = data['email'] as String;
       final profileId = _jwtProfileId(token);
+      final role = data['role'] as String? ?? _jwtRole(token);
       await _tokenService.saveToken(token);
-      emit(AuthAuthenticated(token: token, userId: userId, email: email, profileId: profileId));
+      emit(AuthAuthenticated(
+          token: token,
+          userId: userId,
+          email: email,
+          profileId: profileId,
+          role: role));
     } on DioException catch (e) {
       final msg = e.response?.data?['message']?.toString() ?? e.message ?? 'Error de conexión';
       emit(AuthError(msg));
@@ -157,7 +171,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final email = data['email'] as String;
       final profileId = _jwtProfileId(token);
       await _tokenService.saveToken(token);
-      emit(AuthAuthenticated(token: token, userId: userId, email: email, profileId: profileId, isNewUser: true));
+      emit(AuthAuthenticated(
+          token: token,
+          userId: userId,
+          email: email,
+          profileId: profileId,
+          role: event.role,
+          isNewUser: true));
     } on DioException catch (e) {
       final msg = e.response?.data?['message']?.toString() ?? e.message ?? 'Error de conexión';
       emit(AuthError(msg));
@@ -196,6 +216,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final payload = _jwtPayload(token);
       return payload['profileId'] as String? ?? '';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  String _jwtRole(String token) {
+    try {
+      final payload = _jwtPayload(token);
+      return payload['role'] as String? ?? '';
     } catch (_) {
       return '';
     }

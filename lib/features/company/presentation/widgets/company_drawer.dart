@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../analytics/presentation/pages/analytics_page.dart';
 import '../../../subscription/presentation/pages/subscription_plan_page.dart';
 import '../../../auth/presentation/screens/auth_screen.dart';
 
@@ -148,25 +149,40 @@ class _CompanyDrawerState extends State<CompanyDrawer> {
         // SECCIÓN PRINCIPAL
         _NavItem(
           icon: Icons.home_outlined,
-          label: 'Home',
+          label: 'Inicio',
           isActive: widget.currentIndex == 0,
           onTap: () => _navigateToTab(0),
         ),
         _NavItem(
           icon: Icons.engineering_outlined,
-          label: 'Service Management',
+          label: 'Gestión de Servicios',
           isActive: widget.currentIndex == 1,
           onTap: () => _navigateToTab(1),
         ),
         _NavItem(
           icon: Icons.sensors_outlined,
-          label: 'IoT Monitoring',
+          label: 'Monitoreo IoT',
           isActive: widget.currentIndex == 2,
           onTap: () => _navigateToTab(2),
         ),
         _NavItem(
+          icon: Icons.analytics_outlined,
+          label: 'Analytics y Consumo',
+          isActive: false,
+          onTap: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const Scaffold(
+                  body: SafeArea(child: AnalyticsPage(showBack: true)),
+                ),
+              ),
+            );
+          },
+        ),
+        _NavItem(
           icon: Icons.person_outline,
-          label: 'Profile',
+          label: 'Perfil',
           isActive: widget.currentIndex == 3,
           onTap: () => _navigateToTab(3),
         ),
@@ -174,7 +190,7 @@ class _CompanyDrawerState extends State<CompanyDrawer> {
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           child: Text(
-            'ADMINISTRATION',
+            'ADMINISTRACIÓN',
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.bold,
@@ -187,22 +203,13 @@ class _CompanyDrawerState extends State<CompanyDrawer> {
         // SECCIÓN ADMINISTRACIÓN
         _NavItem(
           icon: Icons.credit_card_outlined,
-          label: 'Subscription',
+          label: 'Suscripción',
           isActive: false,
           onTap: () {
             Navigator.of(context).pop();
             Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const SubscriptionPlanPage()),
             );
-          },
-        ),
-        _NavItem(
-          icon: Icons.settings_outlined,
-          label: 'Settings',
-          isActive: false,
-          onTap: () {
-            // Lógica para Settings si cuentas con ella
-            Navigator.of(context).pop();
           },
         ),
       ],

@@ -5,7 +5,7 @@ import 'core/auth/auth_bloc.dart';
 import 'core/auth/token_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart' as feature_auth;
-import 'features/auth/presentation/screens/register_screen.dart';
+import 'features/auth/presentation/screens/auth_screen.dart';
 import 'features/company/presentation/screens/company_shell.dart';
 import 'features/profile/presentation/bloc/profile_bloc.dart';
 import 'features/profile/presentation/bloc/profile_event.dart';
@@ -50,9 +50,11 @@ class AuthGate extends StatelessWidget {
       listenWhen: (_, current) =>
           current is AuthAuthenticated || current is AuthUnauthenticated,
       listener: (context, state) {
+        // Sin sesión guardada la app arranca en el inicio de sesión;
+        // desde ahí el botón "Registrarse" lleva al registro de empresa.
         final Widget destination = state is AuthAuthenticated
             ? ProfileGate(email: state.email)
-            : const RegisterScreen();
+            : const AuthScreen();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => destination),
@@ -94,10 +96,10 @@ class _ProfileGateState extends State<ProfileGate> {
             MaterialPageRoute(builder: (_) => destination),
           );
         } else if (state is ProfileError) {
-          // Token vencido o backend no disponible: se vuelve al registro.
+          // Token vencido o backend no disponible: se vuelve al login.
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const RegisterScreen()),
+            MaterialPageRoute(builder: (_) => const AuthScreen()),
           );
         }
       },

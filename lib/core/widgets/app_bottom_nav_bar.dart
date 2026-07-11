@@ -13,10 +13,10 @@ class AppBottomNavBar extends StatelessWidget {
   });
 
   static const _items = [
-    _NavItemData(Icons.home, 'Home'),
-    _NavItemData(Icons.build_outlined, 'Services'),
+    _NavItemData(Icons.home, 'Inicio'),
+    _NavItemData(Icons.build_outlined, 'Servicios'),
     _NavItemData(Icons.sensors, 'IoT'),
-    _NavItemData(Icons.person_outline, 'Profile'),
+    _NavItemData(Icons.person_outline, 'Perfil'),
   ];
 
   @override
