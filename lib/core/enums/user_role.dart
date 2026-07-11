@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 enum UserRole {
-  client,
+  homeowner,
   company,
   technician;
 
   String get label {
     switch (this) {
-      case UserRole.client:
+      case UserRole.homeowner:
         return 'Dueño de Hogar';
       case UserRole.company:
         return 'Empresa';
@@ -18,7 +18,7 @@ enum UserRole {
 
   String get iconLabel {
     switch (this) {
-      case UserRole.client:
+      case UserRole.homeowner:
         return 'CH';
       case UserRole.company:
         return 'E';
@@ -29,7 +29,7 @@ enum UserRole {
 
   IconData get icon {
     switch (this) {
-      case UserRole.client:
+      case UserRole.homeowner:
         return Icons.home;
       case UserRole.company:
         return Icons.business;

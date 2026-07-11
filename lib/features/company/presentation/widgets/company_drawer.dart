@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../subscription/presentation/pages/subscription_page.dart';
+import '../../../subscription/presentation/pages/subscription_plan_page.dart';
 import '../../../auth/presentation/screens/auth_screen.dart';
 
 class CompanyDrawer extends StatefulWidget {
@@ -192,7 +192,7 @@ class _CompanyDrawerState extends State<CompanyDrawer> {
           onTap: () {
             Navigator.of(context).pop();
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const SubscriptionPage()),
+              MaterialPageRoute(builder: (_) => const SubscriptionPlanPage()),
             );
           },
         ),

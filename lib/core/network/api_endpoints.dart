@@ -1,5 +1,6 @@
 class ApiEndpoints {
-  static const String baseUrl = 'http://10.0.2.2:8088/api/v1';
+  //static const String baseUrl = 'http://127.0.0.1:8088'; <- Mac port for run flutter 
+  static const String baseUrl = 'http://10.0.2.2:8088';  // <- Android Studio emulator port for run flutter
 
   static const String analyzeOnboarding =
       '/profiles/me/device-onboarding/analyze';

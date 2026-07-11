@@ -66,7 +66,7 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
         ApiEndpoints.cancelSubscription,
         data: {
           'reason': reason,
-          if (feedback != null) 'feedback': feedback,
+          'feedback': ?feedback,
         },
       );
       return true;

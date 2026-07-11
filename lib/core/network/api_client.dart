@@ -1,8 +1,22 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import '../auth/token_service.dart';
+import 'api_constants.dart';
+import 'auth_interceptor.dart';
 
 class ApiClient {
+  static ApiClient? _instance;
+
+  /// Cliente compartido apuntando al backend de identidad/perfiles.
+  static ApiClient get instance =>
+      _instance ??= ApiClient(baseUrl: ApiConstants.baseUrl);
+
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
+
   late final Dio _dio;
+
+  Dio get dio => _dio;
 
   ApiClient({required String baseUrl, String? token}) {
     _dio = Dio(BaseOptions(
@@ -27,6 +41,8 @@ class ApiClient {
         handler.next(error);
       },
     ));
+
+    _dio.interceptors.add(AuthInterceptor(storage));
   }
 
   Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) =>

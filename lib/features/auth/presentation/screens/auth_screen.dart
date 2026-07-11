@@ -18,7 +18,7 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool isLogin = true;
-  UserRole _selectedRole = UserRole.client;
+  UserRole _selectedRole = UserRole.company;
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -68,7 +68,7 @@ class _AuthScreenState extends State<AuthScreen> {
         return 'technician';
       case UserRole.company:
         return 'company';
-      case UserRole.client:
+      case UserRole.homeowner:
         return 'homeowner';
     }
   }
@@ -88,7 +88,7 @@ class _AuthScreenState extends State<AuthScreen> {
           destination = const TechnicalDashboardScreen();
         case UserRole.company:
           destination = const CompanyShell();
-        case UserRole.client:
+        case UserRole.homeowner:
           destination = const HomeownerShell();
       }
       Navigator.pushReplacement(
@@ -124,7 +124,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         )
