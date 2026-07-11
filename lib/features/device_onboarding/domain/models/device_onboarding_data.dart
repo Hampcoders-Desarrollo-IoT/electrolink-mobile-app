@@ -32,6 +32,8 @@ class SuggestedThresholds {
   final double minPowerFactor;
   final double nominalFrequency;
   final int disconnectionThresholdMin;
+  final double normalLimitAmps;
+  final double alertLimitAmps;
 
   const SuggestedThresholds({
     required this.nominalVoltage,
@@ -40,6 +42,8 @@ class SuggestedThresholds {
     required this.minPowerFactor,
     required this.nominalFrequency,
     required this.disconnectionThresholdMin,
+    this.normalLimitAmps = 0.20,
+    this.alertLimitAmps = 0.60,
   });
 
   factory SuggestedThresholds.fromJson(Map<String, dynamic> json) =>
@@ -50,6 +54,8 @@ class SuggestedThresholds {
         minPowerFactor: (json['minPowerFactor'] as num).toDouble(),
         nominalFrequency: (json['nominalFrequency'] as num).toDouble(),
         disconnectionThresholdMin: json['disconnectionThresholdMin'] as int,
+        normalLimitAmps: (json['normalLimitAmps'] as num?)?.toDouble() ?? 0.20,
+        alertLimitAmps: (json['alertLimitAmps'] as num?)?.toDouble() ?? 0.60,
       );
 
   Map<String, dynamic> toThresholdsMap() => {
@@ -59,6 +65,8 @@ class SuggestedThresholds {
     'minPowerFactor': minPowerFactor,
     'nominalFrequency': nominalFrequency,
     'disconnectionThresholdMin': disconnectionThresholdMin,
+    'normalLimitAmps': normalLimitAmps,
+    'alertLimitAmps': alertLimitAmps,
   };
 }
 
