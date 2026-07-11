@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../network/api_client.dart';
+import '../network/api_constants.dart';
 import '../network/api_endpoints.dart';
 import 'token_service.dart';
 
@@ -123,7 +124,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     try {
       final response = await _apiClient.post(
-        '/Authentication/sign-in',
+        ApiConstants.signIn,
         data: {
           'email': event.email,
           'password': event.password,
@@ -157,7 +158,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     try {
       final response = await _apiClient.post(
-        '/Authentication/sign-up',
+        ApiConstants.signUp,
         data: {
           'email': event.email,
           'password': event.password,

@@ -213,6 +213,12 @@ class _Step3ConfirmationPageState extends State<Step3ConfirmationPage> {
                                       .read<OnboardingBloc>()
                                       .add(ConfirmThresholds(
                                           authState.profileId));
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Debes iniciar sesión para guardar'),
+                                    ),
+                                  );
                                 }
                               },
                       style: ElevatedButton.styleFrom(

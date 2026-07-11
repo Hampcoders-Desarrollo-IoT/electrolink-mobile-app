@@ -13,7 +13,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<AdjustThreshold>(_onAdjustThreshold);
     on<ConfirmThresholds>(_onConfirmThresholds);
     on<AdjustWithAI>(_onAdjustWithAI);
-    on<ResetOnboarding>((_, emit) => emit(OnboardingInitial()));
+    on<ResetOnboarding>((_, emit) {
+      _lastAnalysis = null;
+      emit(OnboardingInitial());
+    });
   }
 
   Future<void> _onSubmitDeviceInfo(
@@ -74,7 +77,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     ConfirmThresholds event,
     Emitter<OnboardingState> emit,
   ) async {
-    if (_lastAnalysis == null) return;
+    if (_lastAnalysis == null) {
+      emit(const OnboardingError('No hay datos de análisis para confirmar'));
+      return;
+    }
 
     emit(OnboardingConfirming(_lastAnalysis!));
 

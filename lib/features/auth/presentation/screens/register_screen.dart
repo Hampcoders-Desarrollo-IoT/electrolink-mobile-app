@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_app_electrolink/core/enums/user_role.dart';
+import 'package:mobile_app_electrolink/core/auth/auth_bloc.dart';
 import 'package:mobile_app_electrolink/core/theme/app_theme.dart';
 import 'package:mobile_app_electrolink/core/widgets/homeowner_shell.dart';
 import 'package:mobile_app_electrolink/features/profile/presentation/screens/company_profile_screen.dart';
 import 'package:mobile_app_electrolink/features/technical/presentation/screens/technical_dashboard_screen.dart';
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
 import '../widgets/custom_text_field.dart';
 import 'auth_screen.dart';
 
@@ -56,15 +53,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _navigateByRole(UserRole role) {
+  void _navigateByRole(String role) {
+    final normalizedRole = role.toUpperCase();
     final Widget destination;
-    switch (role) {
-      case UserRole.technician:
-        destination = const TechnicalDashboardScreen();
-      case UserRole.company:
-        destination = CompanyProfileScreen(email: _emailController.text.trim());
-      case UserRole.homeowner:
-        destination = const HomeownerShell();
+    if (normalizedRole.contains('TECHNICIAN') || normalizedRole.contains('MAKER')) {
+      destination = const TechnicalDashboardScreen();
+    } else if (normalizedRole.contains('HOMEOWNER')) {
+      destination = const HomeownerShell();
+    } else {
+      destination = CompanyProfileScreen(email: _emailController.text.trim());
     }
     Navigator.pushAndRemoveUntil(
       context,
@@ -127,10 +124,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
     context.read<AuthBloc>().add(
-          RegisterSubmitted(
+          RegisterRequested(
             email: _emailController.text.trim(),
             password: _passwordController.text,
-            confirmPassword: _confirmPasswordController.text,
+            passwordConfirmation: _confirmPasswordController.text,
+            role: 'company',
           ),
         );
   }
@@ -143,8 +141,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message), backgroundColor: AppColors.errorRed),
           );
-        } else if (state is AuthSuccess) {
-          _navigateByRole(state.user.role);
+        } else if (state is AuthAuthenticated) {
+          _navigateByRole(state.role);
         }
       },
       child: Scaffold(

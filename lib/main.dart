@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/auth/auth_bloc.dart';
 import 'core/auth/token_service.dart';
 import 'core/theme/app_theme.dart';
-import 'features/auth/presentation/bloc/auth_bloc.dart' as feature_auth;
 import 'features/auth/presentation/screens/auth_screen.dart';
 import 'features/company/presentation/screens/company_shell.dart';
 import 'features/profile/presentation/bloc/profile_bloc.dart';
@@ -26,7 +25,6 @@ class ElectroLinkApp extends StatelessWidget {
         BlocProvider(
           create: (_) => AuthBloc(TokenService.instance)..add(AppStarted()),
         ),
-        BlocProvider(create: (_) => feature_auth.AuthBloc()),
         BlocProvider(create: (_) => ProfileBloc()),
       ],
       child: MaterialApp(
@@ -48,7 +46,8 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listenWhen: (_, current) =>
-          current is AuthAuthenticated || current is AuthUnauthenticated,
+          (current is AuthAuthenticated && !current.isNewUser) ||
+          current is AuthUnauthenticated,
       listener: (context, state) {
         // Sin sesión guardada la app arranca en el inicio de sesión;
         // desde ahí el botón "Registrarse" lleva al registro de empresa.
