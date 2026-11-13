@@ -1,121 +1,137 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'core/auth/auth_bloc.dart';
+import 'core/auth/token_service.dart';
+import 'core/theme/app_theme.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart' as feature_auth;
+import 'features/auth/presentation/screens/auth_screen.dart';
+import 'features/company/presentation/screens/company_shell.dart';
+import 'features/profile/presentation/bloc/profile_bloc.dart';
+import 'features/profile/presentation/bloc/profile_event.dart';
+import 'features/profile/presentation/bloc/profile_state.dart';
+import 'features/profile/presentation/screens/company_profile_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ElectroLinkApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ElectroLinkApp extends StatelessWidget {
+  const ElectroLinkApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => AuthBloc(TokenService.instance)..add(AppStarted()),
+        ),
+        BlocProvider(create: (_) => feature_auth.AuthBloc()),
+        BlocProvider(create: (_) => ProfileBloc()),
+      ],
+      child: MaterialApp(
+        title: 'ElectroLink',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        home: const AuthGate(),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+/// Decide la pantalla inicial: sin sesión guardada se exige el registro;
+/// con sesión se verifica si el perfil ya fue completado.
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return BlocListener<AuthBloc, AuthState>(
+      listenWhen: (_, current) =>
+          current is AuthAuthenticated || current is AuthUnauthenticated,
+      listener: (context, state) {
+        // Sin sesión guardada la app arranca en el inicio de sesión;
+        // desde ahí el botón "Registrarse" lleva al registro de empresa.
+        final Widget destination = state is AuthAuthenticated
+            ? ProfileGate(email: state.email)
+            : const AuthScreen();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => destination),
+        );
+      },
+      child: const _SplashView(),
+    );
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+/// Con sesión activa consulta el perfil: si aún no está completo redirige a
+/// la vista de completar datos; si ya lo está, entra directo a la app.
+class ProfileGate extends StatefulWidget {
+  final String email;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  const ProfileGate({super.key, required this.email});
+
+  @override
+  State<ProfileGate> createState() => _ProfileGateState();
+}
+
+class _ProfileGateState extends State<ProfileGate> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProfileBloc>().add(LoadProfile());
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    return BlocListener<ProfileBloc, ProfileState>(
+      listener: (context, state) {
+        if (state is ProfileLoadSuccess) {
+          final Widget destination = state.isComplete
+              ? const CompanyShell()
+              : CompanyProfileScreen(email: widget.email);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => destination),
+          );
+        } else if (state is ProfileError) {
+          // Token vencido o backend no disponible: se vuelve al login.
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const AuthScreen()),
+          );
+        }
+      },
+      child: const _SplashView(),
+    );
+  }
+}
+
+class _SplashView extends StatelessWidget {
+  const _SplashView();
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
+      backgroundColor: AppColors.background,
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            Container(
+              height: 80,
+              width: 80,
+              decoration: BoxDecoration(
+                color: AppColors.darkNavy,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: const Icon(Icons.bolt, color: AppColors.accentYellow, size: 50),
             ),
+            const SizedBox(height: 24),
+            const CircularProgressIndicator(color: AppColors.darkNavy),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
