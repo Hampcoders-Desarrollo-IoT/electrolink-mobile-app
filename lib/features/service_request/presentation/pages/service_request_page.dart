@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_top_bar.dart';
-import '../../../confirm_request/presentation/pages/confirm_request_page.dart';
+import '../../../company/presentation/screens/nueva_solicitud_page.dart';
 import '../bloc/service_request_bloc.dart';
 import '../bloc/service_request_event.dart';
 import '../bloc/service_request_state.dart';
@@ -78,7 +78,7 @@ class _ServiceRequestView extends StatelessWidget {
                   onContinue: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => const ConfirmRequestPage(),
+                        builder: (_) => const NuevaSolicitudPage(),
                       ),
                     );
                   },

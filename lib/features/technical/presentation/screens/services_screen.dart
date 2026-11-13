@@ -77,7 +77,7 @@ class ServicesScreen extends StatelessWidget {
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(10)),
+                        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
                         child: Row(
                           children: [
                             const Icon(Icons.circle, size: 6, color: Color(0xFF00BFA5)),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_top_bar.dart';
 import '../bloc/subscription_bloc.dart';
@@ -21,31 +22,50 @@ class SubscriptionPage extends StatelessWidget {
 class _SubscriptionView extends StatelessWidget {
   const _SubscriptionView();
 
+  void _openUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri != null) {
+      launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            const AppTopBar(showBack: true),
-            Expanded(
-              child: BlocBuilder<SubscriptionBloc, SubscriptionState>(
-                builder: (context, state) {
-                  if (state is SubscriptionLoading ||
-                      state is SubscriptionInitial) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (state is SubscriptionError) {
-                    return Center(child: Text(state.message));
-                  }
-                  if (state is SubscriptionLoaded) {
-                    return _buildContent(context, state);
-                  }
-                  return const SizedBox();
-                },
+    return BlocListener<SubscriptionBloc, SubscriptionState>(
+      listenWhen: (prev, curr) =>
+          curr is SubscriptionLoaded && curr.actionUrl != null,
+      listener: (context, state) {
+        if (state is SubscriptionLoaded && state.actionUrl != null) {
+          _openUrl(state.actionUrl!);
+        }
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              const AppTopBar(showBack: true),
+              Expanded(
+                child: BlocBuilder<SubscriptionBloc, SubscriptionState>(
+                  builder: (context, state) {
+                    if (state is SubscriptionLoading ||
+                        state is SubscriptionInitial) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (state is SubscriptionCancelled) {
+                      return const Center(child: Text('Suscripción cancelada'));
+                    }
+                    if (state is SubscriptionError) {
+                      return Center(child: Text(state.message));
+                    }
+                    if (state is SubscriptionLoaded) {
+                      return _buildContent(context, state);
+                    }
+                    return const SizedBox();
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -53,6 +73,7 @@ class _SubscriptionView extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, SubscriptionLoaded state) {
     final data = state.data;
+    final isActionLoading = state.isActionLoading;
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 48),
       child: Column(
@@ -76,9 +97,9 @@ class _SubscriptionView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          _buildCurrentPlanCard(data),
+          _buildCurrentPlanCard(context, data, isActionLoading),
           const SizedBox(height: 16),
-          _buildBillingPortalCTA(),
+          _buildBillingPortalCTA(context, isActionLoading),
           const SizedBox(height: 16),
           _buildPaymentHistory(data),
         ],
@@ -86,7 +107,38 @@ class _SubscriptionView extends StatelessWidget {
     );
   }
 
-  Widget _buildCurrentPlanCard(dynamic data) {
+  void _onChangePlan(BuildContext context) {
+    context.read<SubscriptionBloc>().add(
+      const ChangePlanRequested(planType: 'PremiumIndividual', billingCycle: 'monthly'),
+    );
+  }
+
+  void _onCancelSubscription(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Cancelar Suscripción'),
+        content: const Text('¿Estás seguro de que deseas cancelar tu suscripción?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              context.read<SubscriptionBloc>().add(
+                const CancelSubscriptionRequested(reason: 'Solicitud del usuario'),
+              );
+            },
+            child: const Text('Sí, cancelar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCurrentPlanCard(BuildContext context, dynamic data, bool isActionLoading) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(25),
@@ -135,15 +187,15 @@ class _SubscriptionView extends StatelessWidget {
                     color: const Color(0x3310B981),
                   ),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.check_circle,
+                    const Icon(Icons.check_circle,
                         size: 8, color: AppColors.green),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Text(
-                      'Activo',
-                      style: TextStyle(
+                      data.status == 'Active' ? 'Activo' : data.status,
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: AppColors.green,
@@ -168,32 +220,16 @@ class _SubscriptionView extends StatelessWidget {
                   letterSpacing: -0.96,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '\$${data.price.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.darkNavy,
-                      ),
-                    ),
-                    const SizedBox(width: 2),
-                    const Text(
-                      '/mes',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.grayText,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
+          if (data.billingCycle != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                'Ciclo: ${data.billingCycle}',
+                style: const TextStyle(fontSize: 14, color: AppColors.grayText),
+              ),
+            ),
           const SizedBox(height: 24),
           ...data.features.map((f) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
@@ -218,7 +254,9 @@ class _SubscriptionView extends StatelessWidget {
                 child: SizedBox(
                   height: 48,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: isActionLoading
+                        ? null
+                        : () => _onChangePlan(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.darkNavy,
                       foregroundColor: Colors.white,
@@ -226,14 +264,19 @@ class _SubscriptionView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      'Cambiar Plan',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.14,
-                      ),
-                    ),
+                    child: isActionLoading
+                        ? const SizedBox(
+                            width: 20, height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          )
+                        : const Text(
+                            'Cambiar Plan',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.14,
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -242,7 +285,9 @@ class _SubscriptionView extends StatelessWidget {
                 child: SizedBox(
                   height: 48,
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: isActionLoading
+                        ? null
+                        : () => _onCancelSubscription(context),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFFEF4444),
                       side: const BorderSide(color: Color(0xFFEF4444)),
@@ -268,7 +313,13 @@ class _SubscriptionView extends StatelessWidget {
     );
   }
 
-  Widget _buildBillingPortalCTA() {
+  void _onOpenPortal(BuildContext context) {
+    context.read<SubscriptionBloc>().add(
+      const OpenPortalRequested(returnUrl: 'electrolink://portal/back'),
+    );
+  }
+
+  Widget _buildBillingPortalCTA(BuildContext context, bool isActionLoading) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -334,8 +385,13 @@ class _SubscriptionView extends StatelessWidget {
             width: double.infinity,
             height: 48,
             child: ElevatedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.arrow_forward, size: 16),
+              onPressed: isActionLoading ? null : () => _onOpenPortal(context),
+              icon: isActionLoading
+                  ? const SizedBox(
+                      width: 20, height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.arrow_forward, size: 16),
               label: const Text('Ir a Stripe'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,

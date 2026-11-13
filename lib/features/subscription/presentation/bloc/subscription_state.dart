@@ -18,11 +18,29 @@ class SubscriptionLoading extends SubscriptionState {
 
 class SubscriptionLoaded extends SubscriptionState {
   final SubscriptionData data;
+  final bool isActionLoading;
+  final String? actionUrl;
 
-  const SubscriptionLoaded(this.data);
+  const SubscriptionLoaded(
+    this.data, {
+    this.isActionLoading = false,
+    this.actionUrl,
+  });
+
+  SubscriptionLoaded copyWith({SubscriptionData? data, bool? isActionLoading, String? actionUrl}) {
+    return SubscriptionLoaded(
+      data ?? this.data,
+      isActionLoading: isActionLoading ?? this.isActionLoading,
+      actionUrl: actionUrl ?? this.actionUrl,
+    );
+  }
 
   @override
-  List<Object> get props => [data];
+  List<Object> get props => [data, isActionLoading, actionUrl ?? ''];  
+}
+
+class SubscriptionCancelled extends SubscriptionState {
+  const SubscriptionCancelled();
 }
 
 class SubscriptionError extends SubscriptionState {

@@ -77,7 +77,7 @@ class _PublishServiceScreenState extends State<PublishServiceScreen> {
                   ),
                   Switch(
                     value: requiresIot,
-                    activeColor: Colors.blue,
+                    activeThumbColor: Colors.blue,
                     onChanged: (val) => setState(() => requiresIot = val),
                   )
                 ],
@@ -142,7 +142,7 @@ class _PublishServiceScreenState extends State<PublishServiceScreen> {
                   Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E2746))),
                 ],
               ),
-              if (trailing != null) trailing,
+              ?trailing,
             ],
           ),
           const Divider(height: 20),

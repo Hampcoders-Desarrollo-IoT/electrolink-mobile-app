@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/auth/auth_bloc.dart';
 import '../../../../features/auth/presentation/screens/auth_screen.dart';
-import '../../../subscription/presentation/pages/subscription_page.dart';
+import '../../../analytics/presentation/pages/analytics_page.dart';
+import '../../../subscription/presentation/pages/subscription_plan_page.dart';
 
 class DashboardDrawer extends StatefulWidget {
   final void Function(int index)? onNavigateToTab;
@@ -18,6 +21,9 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthBloc>().state;
+    final email = authState is AuthAuthenticated ? authState.email : 'Usuario';
+    final userId = authState is AuthAuthenticated ? authState.userId : '';
     return Drawer(
       child: SafeArea(
         child: Container(
@@ -44,7 +50,7 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
           child: Column(
             children: [
               _buildHeader(),
-              _buildProfileCard(),
+              _buildProfileCard(email, userId),
               const SizedBox(height: 8),
               Expanded(child: _buildNavLinks()),
               _buildFooter(),
@@ -85,7 +91,7 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
     );
   }
 
-  Widget _buildProfileCard() {
+  Widget _buildProfileCard(String email, String userId) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Container(
@@ -127,17 +133,21 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Dueño de Hogar',
-                      style: GoogleFonts.hankenGrotesk(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.darkNavy,
+                    SizedBox(
+                      width: 160,
+                      child: Text(
+                        email,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.hankenGrotesk(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.darkNavy,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Estado: Activo',
+                      'Homeowner',
                       style: GoogleFonts.jetBrainsMono(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -152,7 +162,7 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
                 left: 101,
                 top: 68,
                 child: Text(
-                  'ID: EL-4029',
+                  'ID: $userId',
                   style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.idText,
@@ -196,12 +206,12 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
 
   Widget _buildNavLinks() {
     final items = [
-      ('Home', Icons.home, 0),
-      ('Mis Propiedades', Icons.business_outlined, 1),
-      ('Historial de Servicios', Icons.history, 2),
-      ('Analytics & Consumption', Icons.analytics_outlined, 3),
+      ('Inicio', Icons.home, 0),
+      ('Servicios', Icons.build_outlined, 1),
+      ('Monitoreo IoT', Icons.sensors_outlined, 2),
+      ('Analytics y Consumo', Icons.analytics_outlined, 3),
       ('Suscripción', Icons.card_membership_outlined, 4),
-      ('Profile', Icons.person_outline, 5),
+      ('Perfil', Icons.person_outline, 5),
     ];
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -222,14 +232,26 @@ class _DashboardDrawerState extends State<DashboardDrawer> {
     Navigator.of(context).pop();
     setState(() => _activeIndex = index);
 
-    if (index == 4) {
+    // Analytics ya no es tab: se abre como página completa.
+    if (index == 3) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const SubscriptionPage()),
+        MaterialPageRoute(
+          builder: (_) => const Scaffold(
+            body: SafeArea(child: AnalyticsPage(showBack: true)),
+          ),
+        ),
       );
       return;
     }
 
-    final tabMap = {0: 0, 1: 1, 2: 2, 3: 3, 5: 4};
+    if (index == 4) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const SubscriptionPlanPage()),
+      );
+      return;
+    }
+
+    final tabMap = {0: 0, 1: 1, 2: 2, 5: 3};
     final tabIndex = tabMap[index];
     if (tabIndex != null) {
       widget.onNavigateToTab?.call(tabIndex);
